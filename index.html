@@ -2,7 +2,7 @@
 <html lang="en" class="h-full bg-slate-950 text-slate-100 dark">
 <head>
   <meta charset="UTF-8">
-  <title>Nawaab - Staff Compliance & Rota Managemen Portal</title>
+  <title>Nawaab - Staff Compliance & Rota Management Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- Tailwind CSS Framework & Lucide Icons -->
@@ -22,10 +22,10 @@
             brand: {
               50: '#fef2f2',
               100: '#fee2e2',
-              500: '#991b1b', // Nawaab Crimson Red (matches turban brand color)
-              600: '#b91c1c',
-              700: '#991b1b',
-              800: '#7f1d1d'
+              500: '#b91c1c', // Nawaab Crimson Red (matches turban brand color)
+              600: '#991b1b',
+              700: '#7f1d1d',
+              800: '#450a0a'
             },
             slate: {
               950: '#070a13',
@@ -46,19 +46,27 @@
   <!-- ========================================== -->
   <div id="auth-view" class="min-h-screen flex items-center justify-center bg-slate-950 px-4">
     <div class="w-full max-w-md space-y-8 rounded-2xl border border-slate-800 bg-slate-900/50 p-8 backdrop-blur-md">
+      
+      <!-- Brand Header (Falls back to high fidelity SVG if image missing) -->
       <div class="text-center space-y-4">
-        <!-- Brand Logo Graphic Representation -->
-        <div class="mx-auto flex justify-center">
-          <svg class="h-16 w-16 text-brand-500" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-          </svg>
-        </div>
-        <div>
-          <h2 class="text-3xl font-extrabold tracking-tight text-white uppercase font-serif">NAWAAB</h2>
-          <p class="text-xs tracking-widest text-brand-500 uppercase font-semibold">AUTHENTIC INDIAN RESTAURANT</p>
+        <div class="flex flex-col items-center justify-center">
+          <!-- Tries to load logo.png, on fail runs fallback system -->
+          <img src="logo.png" id="login-image-logo" alt="Nawaab Logo" class="h-28 w-auto object-contain mx-auto transition-transform duration-200 hover:scale-105" onerror="showLoginSvgFallback()">
+          
+          <!-- Fallback Inline SVG Logo -->
+          <div id="login-svg-fallback" class="hidden flex flex-col items-center">
+            <svg class="h-24 w-auto text-brand-500" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M100 20C75 20 60 35 60 55C60 62 65 68 72 70C75 62 82 55 90 52C92 48 95 45 100 45C108 45 115 52 115 60C115 68 108 75 100 75C95 75 92 72 90 68C82 72 75 80 72 90C85 95 100 95 115 90C125 80 135 68 135 55C135 35 120 20 100 20Z" fill="#b91c1c"/>
+              <path d="M100 10C100 10 108 18 105 25C102 32 95 35 95 35C95 35 105 32 110 25C115 18 100 10 100 10Z" fill="#991b1b"/>
+              <path d="M90 52C88 55 86 58 85 62C84 66 84 70 85 74C86 78 88 82 91 85C92 86 91 88 89 89C86 91 82 92 78 92C72 92 68 88 66 82C64 76 65 70 67 65C69 60 72 56 76 54C80 52 85 51 90 52Z" fill="#0f1322" stroke="#1d233a" stroke-width="2"/>
+              <path d="M72 90C70 94 68 98 65 100C60 103 55 103 50 101C46 99 44 95 44 90C44 82 48 75 54 70C60 65 67 65 72 70" fill="#000000"/>
+            </svg>
+            <h2 class="text-3xl font-serif font-extrabold tracking-tight text-white uppercase mt-2">NAWAAB</h2>
+            <p class="text-[10px] tracking-widest text-brand-500 uppercase font-semibold">AUTHENTIC INDIAN RESTAURANT</p>
+          </div>
         </div>
         <span class="inline-block rounded-full bg-brand-500/10 px-3.5 py-1 text-xs font-semibold text-brand-100 border border-brand-500/20">
-          UK HOME OFFICE RTW SECURE PORTAL
+          UK HOME OFFICE RTW PORTAL
         </span>
       </div>
 
@@ -110,18 +118,12 @@
     <!-- SIDEBAR NAVIGATION -->
     <aside class="w-full md:w-64 border-r border-slate-800 bg-slate-950 p-6 flex flex-col justify-between hidden md:flex">
       <div class="space-y-6">
-        <!-- Official Brand Header Area -->
-        <div class="flex flex-col space-y-2 border-b border-slate-800 pb-4">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded bg-brand-500 flex items-center justify-center font-bold text-white shadow-lg">N</div>
-            <div>
-              <h1 class="text-sm font-bold tracking-tight text-white font-serif uppercase">NAWAAB</h1>
-              <span class="text-[9px] tracking-wider text-brand-500 uppercase font-semibold">AUTHENTIC INDIAN</span>
-            </div>
-          </div>
-          <!-- Optional local logo graphic override -->
-          <div class="pt-2">
-            <img src="logo.png" alt="Nawaab Logo" onerror="this.style.display='none'" class="h-10 object-contain w-full">
+        <!-- Sidebar Brand Header Area -->
+        <div class="flex flex-col items-center space-y-2 border-b border-slate-800 pb-6">
+          <img src="logo.png" id="sidebar-image-logo" alt="Nawaab Logo" class="h-20 w-auto object-contain mx-auto" onerror="showSidebarSvgFallback()">
+          <div id="sidebar-svg-fallback" class="hidden flex flex-col items-center text-center">
+            <h1 class="text-lg font-serif font-bold text-white tracking-widest uppercase">NAWAAB</h1>
+            <span class="text-[9px] tracking-widest text-brand-500 uppercase font-bold">AUTHENTIC INDIAN</span>
           </div>
         </div>
 
@@ -227,7 +229,7 @@
 
         <div class="grid gap-6 lg:grid-cols-3">
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-semibold text-white font-serif">Staff Directory Overview</h2>
+            <h2 class="text-lg font-semibold text-white font-serif font-serif">Staff Directory Overview</h2>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm text-slate-300">
                 <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
@@ -280,7 +282,7 @@
       <section id="view-employees" class="view-panel hidden space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-6 gap-4">
           <div>
-            <h1 class="text-2xl font-bold text-white font-serif font-serif">Employee Directory</h1>
+            <h1 class="text-2xl font-bold text-white font-serif">Employee Directory</h1>
             <p class="text-sm text-slate-400">View and manage staff employment structures</p>
           </div>
           <button id="add-employee-btn" onclick="toggleForm('add-employee-form')" class="rounded-lg bg-brand-500 px-4 py-2.5 text-xs font-semibold text-white hover:bg-brand-600 transition-all">
@@ -327,7 +329,7 @@
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-400">Job Title</label>
-              <input id="new-title" required type="text" placeholder="e.g. Head Chef" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+              <input id="new-title" required type="text" placeholder="e.g. Head Bartender" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-400">Hourly Rate (£)</label>
@@ -370,8 +372,8 @@
             <i data-lucide="arrow-left" class="h-4 w-4"></i>
           </button>
           <div>
-            <h1 id="prof-name" class="text-2xl font-bold text-white font-serif">Arthur Pendragon</h1>
-            <p id="prof-subtitle" class="text-sm text-slate-400">Kitchen | Head Chef</p>
+            <h1 id="prof-name" class="text-2xl font-bold text-white font-serif">Name</h1>
+            <p id="prof-subtitle" class="text-sm text-slate-400">Job Details</p>
           </div>
         </div>
 
@@ -416,7 +418,7 @@
                 <h2 class="text-lg font-semibold text-white font-serif">Secure Records Vault</h2>
               </div>
               <div id="prof-documents-list" class="divide-y divide-slate-800 text-xs text-slate-400">
-                <!-- Dynamic content -->
+                <!-- Dynamic content with functional deletion -->
               </div>
             </div>
 
@@ -518,7 +520,7 @@
               <h2 id="attendance-state-title" class="text-lg font-bold text-white font-serif">Outside Active Shift</h2>
               <p class="text-xs text-slate-500">Logs automatically reference current branch timezone</p>
             </div>
-            <button id="clock-btn" onclick="handleClockAction()" class="flex items-center gap-2 rounded-lg bg-brand-500 px-6 py-3 font-semibold text-sm text-white hover:bg-brand-600 transition-all">
+            <button id="clock-btn" onclick="handleClockAction()" class="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-sm text-white hover:bg-emerald-500 transition-all">
               Start Work Shift
             </button>
           </div>
@@ -597,7 +599,7 @@
           </div>
 
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-semibold text-white font-serif">Active Rota Feed</h2>
+            <h2 class="text-lg font-semibold text-white font-serif font-serif">Active Rota Feed</h2>
             <div id="shifts-container" class="space-y-3">
               <!-- Dynamic content -->
             </div>
@@ -647,7 +649,7 @@
           </div>
 
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-semibold text-white font-serif">Leave Audit Activity</h2>
+            <h2 class="text-lg font-semibold text-white font-serif font-serif">Leave Audit Activity</h2>
             <div id="leaves-container" class="space-y-3">
               <!-- Dynamic content -->
             </div>
@@ -698,7 +700,7 @@
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 flex flex-col justify-between h-48">
             <div>
               <i data-lucide="file-text" class="h-8 w-8 text-indigo-400 mb-2"></i>
-              <h2 class="text-base font-semibold text-white">Staff Roster Export</h2>
+              <h2 class="text-base font-semibold text-white font-serif">Staff Roster Export</h2>
               <p class="text-xs text-slate-500 mt-1">Detailed directory containing departments, active roles, and pay scales.</p>
             </div>
             <button onclick="downloadReport('roster')" class="flex items-center gap-2 rounded bg-brand-500 hover:bg-brand-600 px-3 py-2 text-xs font-semibold text-white self-start transition-all">
@@ -709,7 +711,7 @@
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 flex flex-col justify-between h-48">
             <div>
               <i data-lucide="shield" class="h-8 w-8 text-amber-400 mb-2"></i>
-              <h2 class="text-base font-semibold text-white">UK Right-to-Work Export</h2>
+              <h2 class="text-base font-semibold text-white font-serif">UK Right-to-Work Export</h2>
               <p class="text-xs text-slate-500 mt-1">Immigration status logs, eVisa transition records [1], and study cap audit flags [2].</p>
             </div>
             <button onclick="downloadReport('compliance')" class="flex items-center gap-2 rounded bg-brand-500 hover:bg-brand-600 px-3 py-2 text-xs font-semibold text-white self-start transition-all">
@@ -725,7 +727,7 @@
   <!-- ========================================== -->
   <!-- MODAL: EDIT EMPLOYEE -->
   <!-- ========================================== -->
-  <div id="edit-employee-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+  <div id="edit-employee-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
     <div class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-slate-800 pb-4">
         <h2 class="text-xl font-bold text-white font-serif">Modify Staff Record</h2>
@@ -805,9 +807,9 @@
   <!-- ========================================== -->
   <script>
     // ============================================================
-    // FIREBASE CLOUD BACKUP CONFIGURATION
+    // FIREBASE CLOUD BACKUP CONFIGURATION (LIVE CHANNELS) [1]
     // ============================================================
-    const USE_FIREBASE = true; // Change this to true to enable Firebase cloud backup!
+    const USE_FIREBASE = true; // Set to true to automatically back up all logs to your cloud storage
     const firebaseConfig = {
         apiKey: "AIzaSyC43qgTkyyHVWMmjGloIPHTMGXnVd_R9R0",
         authDomain: "nawaab-staff-system.firebaseapp.com",
@@ -822,6 +824,17 @@
     let db = {};
     let currentUser = null;
     let firebaseDb = null;
+
+    // DUAL LOGO RENDER ENGINE (Checks if local file logo.png is loaded, falls back to SVG)
+    function showLoginSvgFallback() {
+      document.getElementById('login-image-logo').classList.add('hidden');
+      document.getElementById('login-svg-fallback').classList.remove('hidden');
+    }
+
+    function showSidebarSvgFallback() {
+      document.getElementById('sidebar-image-logo').classList.add('hidden');
+      document.getElementById('sidebar-svg-fallback').classList.remove('hidden');
+    }
 
     // Seed default Nawaab datasets if LocalStorage is empty
     function initDatabase() {
@@ -886,7 +899,7 @@
       }
     }
 
-    // Synchronizes local database variables from Firebase Cloud updates
+    // Synchronizes local database variables from Firebase Cloud updates [1]
     function connectFirebase() {
       if (!USE_FIREBASE) return;
       try {
@@ -906,7 +919,7 @@
           if (val) {
             db = val;
             localStorage.setItem(DB_KEY, JSON.stringify(db));
-            // Trigger UI refreshes
+            // Trigger active panel refresh safely
             const activeView = document.querySelector('.view-panel:not(.hidden)');
             if (activeView) {
               const viewId = activeView.id.replace('view-', '');
@@ -1174,6 +1187,7 @@
       navigate('profile');
     }
 
+    // Load Documents with Delete Action
     function loadDocumentsList(userId) {
       const docList = document.getElementById('prof-documents-list');
       docList.innerHTML = '';
@@ -1189,11 +1203,41 @@
                 <p class="text-sm font-semibold text-white">${d.type}</p>
                 <span class="text-[10px] text-slate-500">${d.file_name}</span>
               </div>
-              <a href="#" onclick="alert('Downloading simulated document: ${d.file_name}')" class="text-xs text-brand-500 hover:underline">Download</a>
+              <div class="flex items-center gap-3">
+                <a href="#" onclick="downloadSimulatedDoc('${d.file_name}')" class="text-xs text-brand-500 hover:underline">Download</a>
+                ${currentUser.role !== 'Staff' ? `
+                  <button onclick="handleDeleteDoc('${d.id}', '${userId}')" class="text-xs text-red-500 hover:text-red-400 hover:underline flex items-center gap-1">
+                    <i data-lucide="trash-2" class="h-3.5 w-3.5"></i> Delete
+                  </button>
+                ` : ''}
+              </div>
             </div>
           `;
         });
+        lucide.createIcons();
       }
+    }
+
+    // Simulated local safe browser download helper for files
+    function downloadSimulatedDoc(fileName) {
+      const content = `Simulated UK RTW Document Record: ${fileName}`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName.endsWith('.pdf') ? fileName : fileName + '.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Handled dynamic delete operation for uploaded docs [1]
+    function handleDeleteDoc(docId, userId) {
+      if (!confirm('Are you sure you want to delete this document?')) return;
+      db.documents = db.documents.filter(d => d.id !== docId);
+      saveDb();
+      loadDocumentsList(userId);
     }
 
     function handleUpdateCompliance(e) {
@@ -1328,7 +1372,7 @@
       db.shifts.forEach(s => {
         const staff = db.users.find(u => u.id === s.user_id);
         container.innerHTML += `
-          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center">
+          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
             <div>
               <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Employee'}</p>
               <span class="text-[10px] text-slate-500">${s.date} | ${s.start_time} - ${s.end_time}</span>
@@ -1373,7 +1417,7 @@
         const canAction = l.status === 'Pending' && currentUser.role !== 'Staff';
 
         container.innerHTML += `
-          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center">
+          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
             <div>
               <div class="flex items-center gap-2">
                 <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Staff Member'}</p>
