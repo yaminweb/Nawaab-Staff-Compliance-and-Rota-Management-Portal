@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100 dark">
+<head>
+  <meta charset="UTF-8">
+  <title>Nawaab - Staff Compliance & Rota Management Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Tailwind CSS Framework & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Firebase Compat SDKs (Loaded securely via CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fef2f2',
+              100: '#fee2e2',
+              500: '#991b1b', // Nawaab Crimson Red (matches turban brand color)
+              600: '#b91c1c',
+              700: '#991b1b',
+              800: '#7f1d1d'
+            },
+            slate: {
+              950: '#070a13',
+              900: '#0f1322',
+              800: '#1d233a',
+              700: '#313a5a'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="h-full font-sans antialiased overflow-hidden flex flex-col">
+
+  <!-- ========================================== -->
+  <!-- 1. AUTHENTICATION / LOGIN VIEW -->
+  <!-- ========================================== -->
+  <div id="auth-view" class="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+    <div class="w-full max-w-md space-y-8 rounded-2xl border border-slate-800 bg-slate-900/50 p-8 backdrop-blur-md">
+      <div class="text-center space-y-4">
+        <!-- Brand Logo Graphic Representation -->
+        <div class="mx-auto flex justify-center">
+          <svg class="h-16 w-16 text-brand-500" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-3xl font-extrabold tracking-tight text-white uppercase font-serif">NAWAAB</h2>
+          <p class="text-xs tracking-widest text-brand-500 uppercase font-semibold">AUTHENTIC INDIAN RESTAURANT</p>
+        </div>
+        <span class="inline-block rounded-full bg-brand-500/10 px-3.5 py-1 text-xs font-semibold text-brand-100 border border-brand-500/20">
+          UK HOME OFFICE RTW SECURE PORTAL
+        </span>
+      </div>
+
+      <div id="login-error" class="hidden rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400 text-center"></div>
+
+      <form id="login-form" class="mt-8 space-y-6" onsubmit="handleLogin(event)">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Email Address</label>
+            <input id="login-email" type="email" required class="mt-1 block w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2.5 text-slate-200 placeholder-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Password</label>
+            <input id="login-password" type="password" required class="mt-1 block w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2.5 text-slate-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full rounded-lg bg-brand-500 py-3 text-sm font-semibold text-white hover:bg-brand-600 transition-all">
+          Access Portal
+        </button>
+      </form>
+
+      <div class="border-t border-slate-800 pt-6 text-center space-y-3">
+        <p class="text-xs text-slate-500">Quick Access Roster Profiles:</p>
+        <div class="grid grid-cols-3 gap-2 text-[10px]">
+          <button onclick="fillDemo('burhan.ali@nawaab-restaurant.co.uk')" class="p-2 border border-slate-800 rounded bg-slate-950 hover:border-brand-500 transition-all">
+            <span class="font-bold block text-brand-500">Director</span>
+            Burhan Ali
+          </button>
+          <button onclick="fillDemo('jakia.begum@nawaab-restaurant.co.uk')" class="p-2 border border-slate-800 rounded bg-slate-950 hover:border-cyan-400 transition-all">
+            <span class="font-bold block text-cyan-400">Kitchen Mgr</span>
+            Jakia Begum
+          </button>
+          <button onclick="fillDemo('shajidur.rahman@nawaab-restaurant.co.uk')" class="p-2 border border-slate-800 rounded bg-slate-950 hover:border-amber-400 transition-all">
+            <span class="font-bold block text-amber-400">Head Chef</span>
+            S. Rahman
+          </button>
+        </div>
+        <p class="text-[10px] text-slate-500">Demo Password: <code class="bg-slate-950 px-1.5 py-0.5 rounded text-slate-300">password123</code></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. MAIN APPLICATION INTERFACE -->
+  <!-- ========================================== -->
+  <div id="workspace" class="hidden min-h-screen flex flex-col md:flex-row overflow-hidden">
+    
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="w-full md:w-64 border-r border-slate-800 bg-slate-950 p-6 flex flex-col justify-between hidden md:flex">
+      <div class="space-y-6">
+        <!-- Official Brand Header Area -->
+        <div class="flex flex-col space-y-2 border-b border-slate-800 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded bg-brand-500 flex items-center justify-center font-bold text-white shadow-lg">N</div>
+            <div>
+              <h1 class="text-sm font-bold tracking-tight text-white font-serif uppercase">NAWAAB</h1>
+              <span class="text-[9px] tracking-wider text-brand-500 uppercase font-semibold">AUTHENTIC INDIAN</span>
+            </div>
+          </div>
+          <!-- Optional local logo graphic override -->
+          <div class="pt-2">
+            <img src="logo.png" alt="Nawaab Logo" onerror="this.style.display='none'" class="h-10 object-contain w-full">
+          </div>
+        </div>
+
+        <nav class="space-y-1">
+          <button onclick="navigate('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="layout-dashboard" class="h-4 w-4"></i> Dashboard
+          </button>
+          <button onclick="navigate('employees')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="users" class="h-4 w-4"></i> Employees
+          </button>
+          <button onclick="navigate('compliance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="shield-check" class="h-4 w-4"></i> Compliance
+          </button>
+          <button onclick="navigate('attendance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="clock" class="h-4 w-4"></i> Attendance
+          </button>
+          <button onclick="navigate('scheduling')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="calendar" class="h-4 w-4"></i> Rota Schedule
+          </button>
+          <button onclick="navigate('leave')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="file-signature" class="h-4 w-4"></i> Leave Requests
+          </button>
+          <button onclick="navigate('payroll')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="landmark" class="h-4 w-4"></i> Payroll Records
+          </button>
+          <button onclick="navigate('reports')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="file-text" class="h-4 w-4"></i> Report Center
+          </button>
+        </nav>
+      </div>
+
+      <div class="border-t border-slate-800 pt-4 mt-6">
+        <div id="firebase-status-badge" class="mb-3 text-[10px] rounded px-2 py-1 flex items-center gap-1.5 bg-slate-900 border border-slate-800">
+          <span class="h-1.5 w-1.5 rounded-full bg-slate-500" id="firebase-dot"></span>
+          <span class="text-slate-400" id="firebase-txt">Local storage mode</span>
+        </div>
+        <div class="mb-4">
+          <p id="user-display-name" class="text-xs font-semibold text-white"></p>
+          <span id="user-display-role" class="text-[10px] text-brand-500 uppercase tracking-widest font-bold"></span>
+        </div>
+        <button onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-red-400 hover:bg-red-500/10 transition-all font-medium">
+          <i data-lucide="log-out" class="h-4 w-4"></i> Sign Out Session
+        </button>
+      </div>
+    </aside>
+
+    <!-- VIEWS CONTAINER -->
+    <main class="flex-1 p-6 lg:p-8 overflow-y-auto space-y-8">
+
+      <!-- ========================================== -->
+      <!-- VIEW: DASHBOARD -->
+      <!-- ========================================== -->
+      <section id="view-dashboard" class="view-panel hidden space-y-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-6 gap-4">
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight lg:text-3xl font-serif">Command Center</h1>
+            <p class="text-sm text-slate-400 mt-1">Real-time stats for Nawaab Indian Restaurant operations</p>
+          </div>
+          <div class="bg-brand-500/10 border border-brand-500/20 rounded-lg px-4 py-2 flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-brand-500 animate-pulse"></span>
+            <span class="text-xs font-semibold text-brand-100">Operation Monitor Online</span>
+          </div>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+            <div class="flex justify-between items-center text-slate-400">
+              <span class="text-xs font-semibold uppercase">Total Staff</span>
+              <i data-lucide="users" class="h-5 w-5 text-indigo-400"></i>
+            </div>
+            <p id="stat-total-employees" class="mt-2 text-3xl font-bold">0</p>
+          </div>
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+            <div class="flex justify-between items-center text-slate-400">
+              <span class="text-xs font-semibold uppercase">Clocked In Today</span>
+              <i data-lucide="clock" class="h-5 w-5 text-emerald-400"></i>
+            </div>
+            <p id="stat-today-attendance" class="mt-2 text-3xl font-bold">0</p>
+          </div>
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+            <div class="flex justify-between items-center text-slate-400">
+              <span class="text-xs font-semibold uppercase">Expiring Visas</span>
+              <i data-lucide="alert-triangle" class="h-5 w-5 text-amber-500 animate-pulse"></i>
+            </div>
+            <p id="stat-visa-expiries" class="mt-2 text-3xl font-bold text-amber-500">0</p>
+          </div>
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+            <div class="flex justify-between items-center text-slate-400">
+              <span class="text-xs font-semibold uppercase">Open Leave</span>
+              <i data-lucide="file-clock" class="h-5 w-5 text-cyan-400"></i>
+            </div>
+            <p id="stat-upcoming-leave" class="mt-2 text-3xl font-bold">0</p>
+          </div>
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+            <div class="flex justify-between items-center text-slate-400">
+              <span class="text-xs font-semibold uppercase">Missing RTW Docs</span>
+              <i data-lucide="shield-alert" class="h-5 w-5 text-red-500"></i>
+            </div>
+            <p id="stat-missing-docs" class="mt-2 text-3xl font-bold text-red-500">0</p>
+          </div>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
+            <h2 class="text-lg font-semibold text-white font-serif">Staff Directory Overview</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-300">
+                <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
+                  <tr>
+                    <th class="p-3">Name</th>
+                    <th class="p-3">Department</th>
+                    <th class="p-3">Job Title</th>
+                    <th class="p-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-recent-employees" class="divide-y divide-slate-800">
+                  <!-- Dynamic content -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 space-y-4">
+            <h2 class="text-lg font-semibold text-white font-serif">Compliance Checklist</h2>
+            <div class="space-y-3">
+              <div class="flex items-start gap-3 rounded-lg bg-slate-950 p-3 border border-slate-800">
+                <i data-lucide="check" class="h-4 w-4 text-emerald-500 mt-0.5"></i>
+                <div>
+                  <h3 class="text-xs font-semibold text-white">Share Codes Checked</h3>
+                  <p class="text-[10px] text-slate-500">Validation recorded for online profiles</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 rounded-lg bg-slate-950 p-3 border border-slate-800">
+                <i data-lucide="check" class="h-4 w-4 text-emerald-500 mt-0.5"></i>
+                <div>
+                  <h3 class="text-xs font-semibold text-white">eVisa Migration Audit</h3>
+                  <p class="text-[10px] text-slate-500">Ensuring shift from physical BRP cards [1]</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 rounded-lg bg-slate-950 p-3 border border-slate-800">
+                <i data-lucide="check" class="h-4 w-4 text-emerald-500 mt-0.5"></i>
+                <div>
+                  <h3 class="text-xs font-semibold text-white">Student Academic Cap</h3>
+                  <p class="text-[10px] text-slate-500">Shifts capped at statutory limit [2]</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW: EMPLOYEES -->
+      <!-- ========================================== -->
+      <section id="view-employees" class="view-panel hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-6 gap-4">
+          <div>
+            <h1 class="text-2xl font-bold text-white font-serif font-serif">Employee Directory</h1>
+            <p class="text-sm text-slate-400">View and manage staff employment structures</p>
+          </div>
+          <button id="add-employee-btn" onclick="toggleForm('add-employee-form')" class="rounded-lg bg-brand-500 px-4 py-2.5 text-xs font-semibold text-white hover:bg-brand-600 transition-all">
+            Enroll New Employee
+          </button>
+        </div>
+
+        <!-- ADD EMPLOYEE FORM -->
+        <form id="add-employee-form" class="hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4" onsubmit="handleAddEmployee(event)">
+          <h2 class="text-lg font-semibold text-white">Personal & Employment Information</h2>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Full Name</label>
+              <input id="new-name" required type="text" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Email</label>
+              <input id="new-email" required type="email" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Contact Phone</label>
+              <input id="new-phone" required type="text" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Nationality</label>
+              <input id="new-nationality" required type="text" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Account Role</label>
+              <select id="new-role" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+                <option value="Staff">Staff</option>
+                <option value="Manager">Manager</option>
+                <option value="Owner">Owner</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Department</label>
+              <select id="new-dept" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+                <option value="Kitchen">Kitchen</option>
+                <option value="Service">Service</option>
+                <option value="Bar">Bar</option>
+                <option value="Management">Management</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Job Title</label>
+              <input id="new-title" required type="text" placeholder="e.g. Head Chef" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Hourly Rate (£)</label>
+              <input id="new-rate" required type="number" step="0.01" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+            </div>
+          </div>
+          <button type="submit" class="rounded bg-brand-500 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-600">
+            Save and Enroll
+          </button>
+        </form>
+
+        <!-- EMPLOYEES TABLE -->
+        <div class="rounded-xl border border-slate-800 bg-slate-900/20 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-300">
+              <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
+                <tr>
+                  <th class="p-4">Name</th>
+                  <th class="p-4">Department</th>
+                  <th class="p-4">Job Title</th>
+                  <th class="p-4">Hourly Rate</th>
+                  <th class="p-4">Nationality</th>
+                  <th class="p-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="employees-table-body" class="divide-y divide-slate-800">
+                <!-- Dynamic content -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW: EMPLOYEE PROFILE -->
+      <!-- ========================================== -->
+      <section id="view-profile" class="view-panel hidden space-y-6">
+        <div class="flex items-center gap-4 border-b border-slate-800 pb-6">
+          <button onclick="navigate('employees')" class="rounded-lg border border-slate-800 p-2 hover:bg-slate-900">
+            <i data-lucide="arrow-left" class="h-4 w-4"></i>
+          </button>
+          <div>
+            <h1 id="prof-name" class="text-2xl font-bold text-white font-serif">Arthur Pendragon</h1>
+            <p id="prof-subtitle" class="text-sm text-slate-400">Kitchen | Head Chef</p>
+          </div>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-2">
+          <!-- Compliance Management Panel -->
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 space-y-4">
+            <div class="flex items-center gap-2 text-brand-500">
+              <i data-lucide="shield" class="h-5 w-5"></i>
+              <h2 class="text-lg font-semibold text-white font-serif">UK Right-to-Work Tracking</h2>
+            </div>
+            <form id="profile-compliance-form" onsubmit="handleUpdateCompliance(event)" class="space-y-4">
+              <input id="prof-id" type="hidden">
+              <div>
+                <label class="block text-xs font-semibold text-slate-400">Visa / Immigrant Status Type</label>
+                <input id="prof-visa-type" type="text" placeholder="e.g. Skilled Worker Visa / Student Visa" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400">Visa Number</label>
+                <input id="prof-visa-number" type="text" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+              </div>
+              <div class="grid gap-4 grid-cols-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-400">Visa Expiry Date</label>
+                  <input id="prof-visa-expiry" type="date" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-400">Online Share Code</label>
+                  <input id="prof-share-code" type="text" placeholder="e.g. S9X8844KL" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+                </div>
+              </div>
+              <button id="prof-comp-btn" type="submit" class="rounded bg-brand-500 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-600">
+                Update Right-to-Work logs
+              </button>
+            </form>
+          </div>
+
+          <!-- Document Management Panel -->
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 space-y-6">
+            <div>
+              <div class="flex items-center gap-2 text-brand-500 mb-4">
+                <i data-lucide="file-text" class="h-5 w-5"></i>
+                <h2 class="text-lg font-semibold text-white font-serif">Secure Records Vault</h2>
+              </div>
+              <div id="prof-documents-list" class="divide-y divide-slate-800 text-xs text-slate-400">
+                <!-- Dynamic content -->
+              </div>
+            </div>
+
+            <!-- Upload simulation -->
+            <form id="prof-upload-form" onsubmit="handleUploadDoc(event)" class="rounded-lg bg-slate-950 p-4 border border-slate-800 space-y-4">
+              <h3 class="text-xs font-semibold uppercase text-slate-400">Upload New Record</h3>
+              <div class="grid gap-4 grid-cols-2">
+                <div>
+                  <label class="block text-[10px] font-semibold text-slate-400">Category</label>
+                  <select id="prof-doc-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-900 p-1.5 text-xs text-slate-100">
+                    <option value="Passport">Passport File</option>
+                    <option value="Visa">Visa File</option>
+                    <option value="Right-to-Work">Right-to-Work Code Document</option>
+                    <option value="Contract">Employment Contract</option>
+                    <option value="Certificate">Training Certificate</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-semibold text-slate-400">Mock Select Document</label>
+                  <input id="prof-doc-file" required type="file" class="mt-1 block w-full text-xs text-slate-400">
+                </div>
+              </div>
+              <button type="submit" class="flex items-center gap-2 rounded bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-600">
+                <i data-lucide="upload" class="h-3 w-3"></i> Save File
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW: COMPLIANCE -->
+      <!-- ========================================== -->
+      <section id="view-compliance" class="view-panel hidden space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white font-serif">UK Right-to-Work Auditing</h1>
+          <p class="text-sm text-slate-400">Track and verify visas, eVisa transition structures [1], and study work limitations [2]</p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
+            <h2 class="text-lg font-semibold text-white font-serif">Immigration & Rota Safeguards</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-300">
+                <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
+                  <tr>
+                    <th class="p-3">Employee</th>
+                    <th class="p-3">Visa Type</th>
+                    <th class="p-3">Expiry Date</th>
+                    <th class="p-3">Compliance Status</th>
+                  </tr>
+                </thead>
+                <tbody id="compliance-table-body" class="divide-y divide-slate-800">
+                  <!-- Dynamic content -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 space-y-4">
+            <h2 class="text-lg font-semibold text-white font-serif">Active Alerts</h2>
+            <div class="rounded-lg bg-amber-500/10 border border-amber-500/20 p-4 space-y-2">
+              <div class="flex items-center gap-2 text-amber-400">
+                <i data-lucide="alert-triangle" class="h-4 w-4"></i>
+                <span class="text-xs font-semibold">90-Day Expiry Warnings</span>
+              </div>
+              <p class="text-xs text-slate-300">
+                Automatic indicators are displayed for visa profiles expiring within 90 days. Always ensure updated share codes are processed prior to expiry.
+              </p>
+            </div>
+            <div class="rounded-lg bg-indigo-500/10 border border-indigo-500/20 p-4 space-y-2">
+              <div class="flex items-center gap-2 text-indigo-400">
+                <i data-lucide="shield" class="h-4 w-4"></i>
+                <span class="text-xs font-semibold">Digital eVisa Shift</span>
+              </div>
+              <p class="text-xs text-slate-300">
+                The UK Home Office is transitioning from physical BRP cards to a fully digital eVisa process [1]. Verify that affected team members submit their digital share codes [1].
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW: ATTENDANCE -->
+      <!-- ========================================== -->
+      <section id="view-attendance" class="view-panel hidden space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white font-serif">Work Clock Terminal</h1>
+          <p class="text-sm text-slate-400">Log daily work hours and check shift timings</p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 flex flex-col items-center justify-center space-y-4">
+            <div class="rounded-full bg-slate-950 p-6 border border-slate-800">
+              <i data-lucide="clock" class="h-12 w-12 text-slate-400"></i>
+            </div>
+            <div class="text-center">
+              <h2 id="attendance-state-title" class="text-lg font-bold text-white font-serif">Outside Active Shift</h2>
+              <p class="text-xs text-slate-500">Logs automatically reference current branch timezone</p>
+            </div>
+            <button id="clock-btn" onclick="handleClockAction()" class="flex items-center gap-2 rounded-lg bg-brand-500 px-6 py-3 font-semibold text-sm text-white hover:bg-brand-600 transition-all">
+              Start Work Shift
+            </button>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
+            <h2 class="text-lg font-semibold text-white font-serif">Daily Attendance Log</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-300">
+                <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
+                  <tr>
+                    <th class="p-3">Staff Name</th>
+                    <th class="p-3">Date</th>
+                    <th class="p-3">Clock In</th>
+                    <th class="p-3">Clock Out</th>
+                  </tr>
+                </thead>
+                <tbody id="attendance-table-body" class="divide-y divide-slate-800">
+                  <!-- Dynamic content -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW: SCHEDULING -->
+      <!-- ========================================== -->
+      <section id="view-scheduling" class="view-panel hidden space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white font-serif">Staff Rota</h1>
+          <p class="text-sm text-slate-400">Organize restaurant floor schedules and assignments</p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <!-- Assign Shift Panel -->
+          <div id="assign-shift-panel" class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 space-y-4">
+            <h2 class="text-lg font-semibold text-white font-serif">Schedule Shift</h2>
+            <form onsubmit="handleCreateShift(event)" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-400">Employee</label>
+                <select id="shift-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+                  <!-- Dynamic list of employees -->
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400">Date</label>
+                <input id="shift-date" required type="date" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+              </div>
+              <div class="grid gap-4 grid-cols-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-400">Start Time</label>
+                  <input id="shift-start" type="time" value="09:00" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-400">End Time</label>
+                  <input id="shift-end" type="time" value="17:00" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400">Department</label>
+                <select id="shift-dept" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+                  <option value="Kitchen">Kitchen</option>
+                  <option value="Service">Service</option>
+                  <option value="Bar">Bar</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400">Operational Notes</label>
+                <textarea id="shift-notes" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm h-16 text-slate-100 focus:outline-none"></textarea>
+              </div>
+              <button type="submit" class="w-full rounded bg-brand-500 py-2.5 text-xs font-semibold text-white hover:bg-brand-600">
+                Save Shift Block
+              </button>
+            </form>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
+            <h2 class="text-lg font-semibold text-white font-serif">Active Rota Feed</h2>
+            <div id="shifts-container" class="space-y-3">
+              <!-- Dynamic content -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW: LEAVE -->
+      <!-- ========================================== -->
+      <section id="view-leave" class="view-panel hidden space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white font-serif">Absence & Leave Requests</h1>
+          <p class="text-sm text-slate-400">Manage statutory and personal absences</p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 space-y-4">
+            <h2 class="text-lg font-semibold text-white font-serif">Request Leave</h2>
+            <form onsubmit="handleRequestLeave(event)" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-400">Leave Category</label>
+                <select id="leave-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+                  <option value="Annual Leave">Annual Leave</option>
+                  <option value="Sick Leave">Sick Leave</option>
+                  <option value="Emergency Leave">Emergency Leave</option>
+                </select>
+              </div>
+              <div class="grid gap-4 grid-cols-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-400">Start Date</label>
+                  <input id="leave-start" required type="date" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-400">End Date</label>
+                  <input id="leave-end" required type="date" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400">Reason / Details</label>
+                <textarea id="leave-reason" required class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm h-24 text-slate-100 focus:outline-none"></textarea>
+              </div>
+              <button type="submit" class="w-full rounded bg-brand-500 py-2.5 text-xs font-semibold text-white hover:bg-brand-600">
+                Submit Request
+              </button>
+            </form>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
+            <h2 class="text-lg font-semibold text-white font-serif">Leave Audit Activity</h2>
+            <div id="leaves-container" class="space-y-3">
+              <!-- Dynamic content -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW: PAYROLL -->
+      <!-- ========================================== -->
+      <section id="view-payroll" class="view-panel hidden space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white font-serif">Payroll Records</h1>
+          <p class="text-sm text-slate-400">Review monthly payroll statements and hours worked</p>
+        </div>
+
+        <div class="rounded-xl border border-slate-800 bg-slate-900/20 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-300">
+              <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
+                <tr>
+                  <th class="p-4">Staff Name</th>
+                  <th class="p-4">Pay Period</th>
+                  <th class="p-4">Hours</th>
+                  <th class="p-4">Gross Pay</th>
+                  <th class="p-4">Deductions</th>
+                  <th class="p-4">Net Pay</th>
+                </tr>
+              </thead>
+              <tbody id="payroll-table-body" class="divide-y divide-slate-800">
+                <!-- Dynamic content -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW: REPORTS -->
+      <!-- ========================================== -->
+      <section id="view-reports" class="view-panel hidden space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white font-serif">System Reports</h1>
+          <p class="text-sm text-slate-400">Export compliance records and staff databases</p>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 flex flex-col justify-between h-48">
+            <div>
+              <i data-lucide="file-text" class="h-8 w-8 text-indigo-400 mb-2"></i>
+              <h2 class="text-base font-semibold text-white">Staff Roster Export</h2>
+              <p class="text-xs text-slate-500 mt-1">Detailed directory containing departments, active roles, and pay scales.</p>
+            </div>
+            <button onclick="downloadReport('roster')" class="flex items-center gap-2 rounded bg-brand-500 hover:bg-brand-600 px-3 py-2 text-xs font-semibold text-white self-start transition-all">
+              <i data-lucide="download" class="h-3 w-3"></i> Get CSV Log
+            </button>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 flex flex-col justify-between h-48">
+            <div>
+              <i data-lucide="shield" class="h-8 w-8 text-amber-400 mb-2"></i>
+              <h2 class="text-base font-semibold text-white">UK Right-to-Work Export</h2>
+              <p class="text-xs text-slate-500 mt-1">Immigration status logs, eVisa transition records [1], and study cap audit flags [2].</p>
+            </div>
+            <button onclick="downloadReport('compliance')" class="flex items-center gap-2 rounded bg-brand-500 hover:bg-brand-600 px-3 py-2 text-xs font-semibold text-white self-start transition-all">
+              <i data-lucide="download" class="h-3 w-3"></i> Get CSV Log
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: EDIT EMPLOYEE -->
+  <!-- ========================================== -->
+  <div id="edit-employee-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+        <h2 class="text-xl font-bold text-white font-serif">Modify Staff Record</h2>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+      <form onsubmit="handleSaveEmployeeEdit(event)" class="space-y-4">
+        <input type="hidden" id="edit-id">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400">Full Name</label>
+            <input id="edit-name" required type="text" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400">Email Address</label>
+            <input id="edit-email" required type="email" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400">Contact Phone</label>
+            <input id="edit-phone" required type="text" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400">Nationality</label>
+            <input id="edit-nationality" required type="text" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400">Account Permission Role</label>
+            <select id="edit-role" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+              <option value="Staff">Staff</option>
+              <option value="Manager">Manager</option>
+              <option value="Owner">Owner</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400">Department</label>
+            <select id="edit-dept" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+              <option value="Kitchen">Kitchen</option>
+              <option value="Service">Service</option>
+              <option value="Bar">Bar</option>
+              <option value="Management">Management</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400">Job Title</label>
+            <input id="edit-title" required type="text" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400">Hourly Rate (£)</label>
+            <input id="edit-rate" required type="number" step="0.01" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400">Employment Status</label>
+            <select id="edit-status" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+              <option value="Terminated">Terminated</option>
+              <option value="Vacant">Vacant Profile</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="border-t border-slate-800 pt-4 flex justify-end gap-3">
+          <button type="button" onclick="closeEditModal()" class="rounded border border-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800">
+            Cancel
+          </button>
+          <button type="submit" class="rounded bg-brand-500 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-600">
+            Save Modifications
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. DATABASE & FIREBASE SYNC ENGINE -->
+  <!-- ========================================== -->
+  <script>
+    // ============================================================
+    // FIREBASE CLOUD BACKUP CONFIGURATION
+    // ============================================================
+    const USE_FIREBASE = true; // Change this to true to enable Firebase cloud backup!
+    const firebaseConfig = {
+        apiKey: "AIzaSyC43qgTkyyHVWMmjGloIPHTMGXnVd_R9R0",
+        authDomain: "nawaab-staff-system.firebaseapp.com",
+        databaseURL: "https://nawaab-staff-system-default-rtdb.europe-west1.firebasedatabase.app/",
+        projectId: "nawaab-staff-system",
+        storageBucket: "nawaab-staff-system.firebasestorage.app",
+        messagingSenderId: "617115827908",
+        appId: "1:617115827908:web:5dc6abf70523b81ab3d391"
+    };
+
+    const DB_KEY = 'nawaab_restaurant_db';
+    let db = {};
+    let currentUser = null;
+    let firebaseDb = null;
+
+    // Seed default Nawaab datasets if LocalStorage is empty
+    function initDatabase() {
+      const stored = localStorage.getItem(DB_KEY);
+      if (stored) {
+        db = JSON.parse(stored);
+      } else {
+        db = {
+          users: [
+            // DIRECTORS / OWNERS
+            { id: "1", email: "burhan.ali@nawaab-restaurant.co.uk", password: "password123", name: "Burhan Ali", role: "Owner", department: "Management", job_title: "Director", phone: "07700900011", nationality: "British", hourly_rate: 30.00, start_date: "2018-03-01", status: "Active" },
+            { id: "2", email: "golam.robbani@nawaab-restaurant.co.uk", password: "password123", name: "Golam Robbani", role: "Owner", department: "Management", job_title: "Director", phone: "07700900022", nationality: "British", hourly_rate: 30.00, start_date: "2018-03-01", status: "Active" },
+            
+            // KITCHEN MANAGER
+            { id: "3", email: "jakia.begum@nawaab-restaurant.co.uk", password: "password123", name: "Jakia Begum", role: "Manager", department: "Kitchen", job_title: "Kitchen Manager", phone: "07700900033", nationality: "British", hourly_rate: 20.00, start_date: "2020-05-15", status: "Active" },
+            
+            // CHEF
+            { id: "4", email: "shajidur.rahman@nawaab-restaurant.co.uk", password: "password123", name: "Syed Shajidur Rahman", role: "Staff", department: "Kitchen", job_title: "Chef", phone: "07700900044", nationality: "Bangladeshi", hourly_rate: 16.50, start_date: "2021-08-10", status: "Active", visa_type: "Skilled Worker Visa", visa_number: "UKW22334455", visa_expiry_date: "2027-11-15", share_code: "W9R387TKP" },
+            
+            // VACANT KITCHEN SLOTS
+            { id: "5", email: "vacant.currychef@nawaab-restaurant.co.uk", password: "password123", name: "Vacant (Curry Chef)", role: "Staff", department: "Kitchen", job_title: "Curry Chef", phone: "-", nationality: "-", hourly_rate: 0.00, start_date: "-", status: "Vacant" },
+            { id: "6", email: "vacant.cook@nawaab-restaurant.co.uk", password: "password123", name: "Vacant (Cook)", role: "Staff", department: "Kitchen", job_title: "Cook", phone: "-", nationality: "-", hourly_rate: 0.00, start_date: "-", status: "Vacant" },
+            { id: "7", email: "vacant.assistant@nawaab-restaurant.co.uk", password: "password123", name: "Vacant (Kitchen Assistant)", role: "Staff", department: "Kitchen", job_title: "Kitchen Assistant", phone: "-", nationality: "-", hourly_rate: 0.00, start_date: "-", status: "Vacant" },
+
+            // SERVICE & FLOOR SUPERVISORS
+            { id: "8", email: "ayesha.sultana@nawaab-restaurant.co.uk", password: "password123", name: "Mst Ayesha Sultana", role: "Manager", department: "Service", job_title: "Floor Supervisor", phone: "07700900088", nationality: "British", hourly_rate: 16.00, start_date: "2022-01-05", status: "Active" },
+            { id: "9", email: "shibli.begum@nawaab-restaurant.co.uk", password: "password123", name: "Mst Shibli Begum", role: "Staff", department: "Service", job_title: "Waiter", phone: "07700900099", nationality: "Bangladeshi", hourly_rate: 11.44, start_date: "2023-04-12", status: "Active", visa_type: "Student Visa (20hr limit)", visa_number: "UKS99887766", visa_expiry_date: "2026-06-30", share_code: "S9X8844KL" },
+            
+            // VACANT SERVICE SLOTS
+            { id: "10", email: "vacant.driver@nawaab-restaurant.co.uk", password: "password123", name: "Vacant (Delivery Driver)", role: "Staff", department: "Service", job_title: "Delivery Driver", phone: "-", nationality: "-", hourly_rate: 0.00, start_date: "-", status: "Vacant" }
+          ],
+          documents: [
+            { id: "1", user_id: "4", type: "Passport", file_name: "Shajidur_Passport.pdf" },
+            { id: "2", user_id: "4", type: "Visa", file_name: "Shajidur_Visa_Letter.pdf" },
+            { id: "3", user_id: "9", type: "Passport", file_name: "Shibli_Passport.pdf" }
+          ],
+          shifts: [
+            { id: "1", user_id: "4", date: "2026-06-03", start_time: "12:00", end_time: "22:00", department: "Kitchen", notes: "Dinner service prep" },
+            { id: "2", user_id: "9", date: "2026-06-03", start_time: "17:00", end_time: "23:00", department: "Service", notes: "Floor schedule" }
+          ],
+          attendance: [
+            { id: "1", user_id: "4", date: "2026-06-03", clock_in: "11:58", clock_out: "22:02" },
+            { id: "2", user_id: "9", date: "2026-06-03", clock_in: "16:55", clock_out: "" }
+          ],
+          leave: [
+            { id: "1", user_id: "4", type: "Annual Leave", start_date: "2026-06-15", end_date: "2026-06-20", total_days: 5, reason: "Family trip", status: "Pending" }
+          ],
+          payroll: [
+            { id: "1", user_id: "4", period_start: "2026-05-01", period_end: "2026-05-31", hours_worked: 160, pay: 2640, deductions: 350, net_pay: 2290 },
+            { id: "2", user_id: "9", period_start: "2026-05-01", period_end: "2026-05-31", hours_worked: 80, pay: 915.20, deductions: 0, net_pay: 915.20 }
+          ]
+        };
+        saveDb();
+      }
+    }
+
+    // Connects database write tasks to either LocalStorage or Firebase Realtime DB
+    function saveDb() {
+      localStorage.setItem(DB_KEY, JSON.stringify(db));
+      if (USE_FIREBASE && firebaseDb) {
+        firebaseDb.ref('nawaab_restaurant_db').set(db);
+      }
+    }
+
+    // Synchronizes local database variables from Firebase Cloud updates
+    function connectFirebase() {
+      if (!USE_FIREBASE) return;
+      try {
+        firebase.initializeApp(firebaseConfig);
+        firebaseDb = firebase.database();
+        
+        // Show status connection
+        const dot = document.getElementById('firebase-dot');
+        const txt = document.getElementById('firebase-txt');
+        
+        dot.className = "h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse";
+        txt.textContent = "Cloud Sync Active";
+
+        // Realtime data listener
+        firebaseDb.ref('nawaab_restaurant_db').on('value', (snapshot) => {
+          const val = snapshot.val();
+          if (val) {
+            db = val;
+            localStorage.setItem(DB_KEY, JSON.stringify(db));
+            // Trigger UI refreshes
+            const activeView = document.querySelector('.view-panel:not(.hidden)');
+            if (activeView) {
+              const viewId = activeView.id.replace('view-', '');
+              navigate(viewId);
+            }
+          }
+        });
+      } catch (err) {
+        console.error("Firebase Connection Error: ", err);
+      }
+    }
+
+    // Run-time bootstrap trigger
+    initDatabase();
+    connectFirebase();
+
+    // ==========================================
+    // 5. AUTHENTICATION & LOGIN CONTROLLER
+    // ==========================================
+    function fillDemo(email) {
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = 'password123';
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+      const errorDiv = document.getElementById('login-error');
+
+      const user = db.users.find(u => u.email === email && u.password === pass);
+      if (user) {
+        currentUser = user;
+        sessionStorage.setItem('current_user', JSON.stringify(user));
+        errorDiv.classList.add('hidden');
+        initWorkspace();
+      } else {
+        errorDiv.textContent = 'Incorrect credentials';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      sessionStorage.removeItem('current_user');
+      document.getElementById('workspace').classList.add('hidden');
+      document.getElementById('auth-view').classList.remove('hidden');
+    }
+
+    function initWorkspace() {
+      document.getElementById('auth-view').classList.add('hidden');
+      document.getElementById('workspace').classList.remove('hidden');
+
+      document.getElementById('user-display-name').textContent = currentUser.name;
+      document.getElementById('user-display-role').textContent = currentUser.role;
+
+      // Restrict structural tasks from base-level staff roles
+      if (currentUser.role === 'Staff') {
+        document.getElementById('add-employee-btn').classList.add('hidden');
+        document.getElementById('assign-shift-panel').classList.add('hidden');
+        document.getElementById('prof-comp-btn').classList.add('hidden');
+        document.getElementById('prof-upload-form').classList.add('hidden');
+      } else {
+        document.getElementById('add-employee-btn').classList.remove('hidden');
+        document.getElementById('assign-shift-panel').classList.remove('hidden');
+        document.getElementById('prof-comp-btn').classList.remove('hidden');
+        document.getElementById('prof-upload-form').classList.remove('hidden');
+      }
+
+      navigate('dashboard');
+    }
+
+    // ==========================================
+    // 6. ROUTER NAVIGATION
+    // ==========================================
+    function navigate(viewId) {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-brand-500/10', 'text-brand-500', 'border', 'border-brand-500/20'));
+
+      document.getElementById('view-' + viewId).classList.remove('hidden');
+      lucide.createIcons();
+
+      // UI update hooks
+      if (viewId === 'dashboard') loadDashboard();
+      if (viewId === 'employees') loadEmployees();
+      if (viewId === 'compliance') loadCompliance();
+      if (viewId === 'attendance') loadAttendance();
+      if (viewId === 'scheduling') loadScheduling();
+      if (viewId === 'leave') loadLeave();
+      if (viewId === 'payroll') loadPayroll();
+    }
+
+    function toggleForm(id) {
+      document.getElementById(id).classList.toggle('hidden');
+    }
+
+    // ==========================================
+    // 7. OPERATION FLOW PANELS
+    // ==========================================
+
+    // VIEW: DASHBOARD
+    function loadDashboard() {
+      const activeStaff = db.users.filter(u => u.status !== 'Vacant' && u.status !== 'Terminated');
+      document.getElementById('stat-total-employees').textContent = activeStaff.length;
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayAttendance = db.attendance.filter(a => a.date === todayStr).length;
+      document.getElementById('stat-today-attendance').textContent = todayAttendance;
+
+      const visaExpiries = db.users.filter(emp => {
+        if (!emp.visa_expiry_date) return false;
+        const diff = new Date(emp.visa_expiry_date) - new Date();
+        return diff > 0 && diff <= 90 * 24 * 60 * 60 * 1000;
+      }).length;
+      document.getElementById('stat-visa-expiries').textContent = visaExpiries;
+
+      const openLeave = db.leave.filter(l => l.status === 'Pending').length;
+      document.getElementById('stat-upcoming-leave').textContent = openLeave;
+
+      const missingDocs = db.users.filter(emp => !emp.share_code && emp.nationality !== 'British' && emp.status !== 'Vacant').length;
+      document.getElementById('stat-missing-docs').textContent = missingDocs;
+
+      const recentBody = document.getElementById('dashboard-recent-employees');
+      recentBody.innerHTML = '';
+      db.users.slice(0, 4).forEach(emp => {
+        recentBody.innerHTML += `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-3 font-semibold text-white">${emp.name}</td>
+            <td class="p-3 text-slate-400">${emp.department}</td>
+            <td class="p-3 text-slate-400">${emp.job_title}</td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                emp.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400' :
+                emp.status === 'Vacant' ? 'bg-slate-800 text-slate-400' : 'bg-red-500/10 text-red-400'
+              }">${emp.status}</span>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // VIEW: EMPLOYEES DIRECTORY
+    function loadEmployees() {
+      const tbody = document.getElementById('employees-table-body');
+      tbody.innerHTML = '';
+      db.users.forEach(emp => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-4 font-semibold text-brand-500">
+              <button onclick="viewProfile('${emp.id}')" class="hover:underline text-left">${emp.name}</button>
+            </td>
+            <td class="p-4 text-slate-400">${emp.department}</td>
+            <td class="p-4 text-slate-300">${emp.job_title}</td>
+            <td class="p-4 text-slate-300">£${parseFloat(emp.hourly_rate || 0).toFixed(2)}</td>
+            <td class="p-4 text-slate-400">${emp.nationality}</td>
+            <td class="p-4 text-right space-x-3">
+              <button onclick="viewProfile('${emp.id}')" class="text-xs text-indigo-400 hover:underline">Profile</button>
+              ${currentUser.role !== 'Staff' ? `<button onclick="openEditModal('${emp.id}')" class="text-xs text-emerald-400 hover:underline">Edit</button>` : ''}
+              ${currentUser.role !== 'Staff' && emp.id !== currentUser.id ? `<button onclick="deleteEmployee('${emp.id}')" class="text-xs text-red-400 hover:underline">Remove</button>` : ''}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function handleAddEmployee(e) {
+      e.preventDefault();
+      const newEmp = {
+        id: String(Date.now()),
+        name: document.getElementById('new-name').value,
+        email: document.getElementById('new-email').value,
+        phone: document.getElementById('new-phone').value,
+        nationality: document.getElementById('new-nationality').value,
+        role: document.getElementById('new-role').value,
+        department: document.getElementById('new-dept').value,
+        job_title: document.getElementById('new-title').value,
+        hourly_rate: parseFloat(document.getElementById('new-rate').value),
+        start_date: new Date().toISOString().split('T')[0],
+        status: 'Active',
+        password: 'password123'
+      };
+
+      db.users.push(newEmp);
+      saveDb();
+      document.getElementById('add-employee-form').reset();
+      document.getElementById('add-employee-form').classList.add('hidden');
+      loadEmployees();
+    }
+
+    function deleteEmployee(id) {
+      if (!confirm('Are you sure you want to delete this profile?')) return;
+      db.users = db.users.filter(u => u.id !== id);
+      db.documents = db.documents.filter(d => d.user_id !== id);
+      db.shifts = db.shifts.filter(s => s.user_id !== id);
+      db.attendance = db.attendance.filter(a => a.user_id !== id);
+      db.leave = db.leave.filter(l => l.user_id !== id);
+      saveDb();
+      loadEmployees();
+    }
+
+    // ==========================================
+    // 8. STAFF RECORD MODIFICATION (EDIT OPTION)
+    // ==========================================
+    function openEditModal(id) {
+      const emp = db.users.find(u => u.id === id);
+      if (!emp) return;
+
+      document.getElementById('edit-id').value = emp.id;
+      document.getElementById('edit-name').value = emp.name;
+      document.getElementById('edit-email').value = emp.email || '';
+      document.getElementById('edit-phone').value = emp.phone || '';
+      document.getElementById('edit-nationality').value = emp.nationality || '';
+      document.getElementById('edit-role').value = emp.role || 'Staff';
+      document.getElementById('edit-dept').value = emp.department || 'Kitchen';
+      document.getElementById('edit-title').value = emp.job_title || '';
+      document.getElementById('edit-rate').value = emp.hourly_rate || 0.00;
+      document.getElementById('edit-status').value = emp.status || 'Active';
+
+      document.getElementById('edit-employee-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeEditModal() {
+      document.getElementById('edit-employee-modal').classList.add('hidden');
+    }
+
+    function handleSaveEmployeeEdit(e) {
+      e.preventDefault();
+      const id = document.getElementById('edit-id').value;
+      const idx = db.users.findIndex(u => u.id === id);
+
+      if (idx !== -1) {
+        db.users[idx].name = document.getElementById('edit-name').value;
+        db.users[idx].email = document.getElementById('edit-email').value;
+        db.users[idx].phone = document.getElementById('edit-phone').value;
+        db.users[idx].nationality = document.getElementById('edit-nationality').value;
+        db.users[idx].role = document.getElementById('edit-role').value;
+        db.users[idx].department = document.getElementById('edit-dept').value;
+        db.users[idx].job_title = document.getElementById('edit-title').value;
+        db.users[idx].hourly_rate = parseFloat(document.getElementById('edit-rate').value);
+        db.users[idx].status = document.getElementById('edit-status').value;
+
+        saveDb();
+        closeEditModal();
+        loadEmployees();
+        alert('Staff particulars successfully saved.');
+      }
+    }
+
+    // VIEW: EMPLOYEE PROFILE COMPLIANCE TRACKING
+    function viewProfile(id) {
+      const emp = db.users.find(u => u.id === id);
+      if (!emp) return;
+
+      document.getElementById('prof-id').value = emp.id;
+      document.getElementById('prof-name').textContent = emp.name;
+      document.getElementById('prof-subtitle').textContent = emp.department + ' | ' + emp.job_title;
+
+      document.getElementById('prof-visa-type').value = emp.visa_type || '';
+      document.getElementById('prof-visa-number').value = emp.visa_number || '';
+      document.getElementById('prof-visa-expiry').value = emp.visa_expiry_date || '';
+      document.getElementById('prof-share-code').value = emp.share_code || '';
+
+      loadDocumentsList(emp.id);
+      navigate('profile');
+    }
+
+    function loadDocumentsList(userId) {
+      const docList = document.getElementById('prof-documents-list');
+      docList.innerHTML = '';
+      const docs = db.documents.filter(d => d.user_id === userId);
+
+      if (docs.length === 0) {
+        docList.innerHTML = '<p class="text-xs text-slate-500 py-3">No compliance records loaded.</p>';
+      } else {
+        docs.forEach(d => {
+          docList.innerHTML += `
+            <div class="flex justify-between items-center py-2.5">
+              <div>
+                <p class="text-sm font-semibold text-white">${d.type}</p>
+                <span class="text-[10px] text-slate-500">${d.file_name}</span>
+              </div>
+              <a href="#" onclick="alert('Downloading simulated document: ${d.file_name}')" class="text-xs text-brand-500 hover:underline">Download</a>
+            </div>
+          `;
+        });
+      }
+    }
+
+    function handleUpdateCompliance(e) {
+      e.preventDefault();
+      const id = document.getElementById('prof-id').value;
+      const idx = db.users.findIndex(u => u.id === id);
+
+      if (idx !== -1) {
+        db.users[idx].visa_type = document.getElementById('prof-visa-type').value;
+        db.users[idx].visa_number = document.getElementById('prof-visa-number').value;
+        db.users[idx].visa_expiry_date = document.getElementById('prof-visa-expiry').value;
+        db.users[idx].share_code = document.getElementById('prof-share-code').value;
+        saveDb();
+        alert('Immigration records updated.');
+      }
+    }
+
+    function handleUploadDoc(e) {
+      e.preventDefault();
+      const userId = document.getElementById('prof-id').value;
+      const type = document.getElementById('prof-doc-type').value;
+      const file = document.getElementById('prof-doc-file').files[0];
+
+      if (!file) return;
+
+      db.documents.push({
+        id: String(Date.now()),
+        user_id: userId,
+        type: type,
+        file_name: file.name
+      });
+      saveDb();
+      loadDocumentsList(userId);
+      document.getElementById('prof-doc-file').value = '';
+      alert('Document securely added to profile.');
+    }
+
+    // VIEW: COMPLIANCE AUDITING
+    function loadCompliance() {
+      const tbody = document.getElementById('compliance-table-body');
+      tbody.innerHTML = '';
+
+      db.users.filter(u => u.status !== 'Vacant').forEach(emp => {
+        let badge = '';
+        if (emp.nationality === 'British') {
+          badge = '<span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-xs border border-emerald-500/20">Citizen</span>';
+        } else if (!emp.share_code) {
+          badge = '<span class="bg-red-500/10 text-red-400 px-2 py-0.5 rounded text-xs border border-red-500/20">Missing share code</span>';
+        } else {
+          badge = '<span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-xs border border-emerald-500/20">Verified RTW status</span>';
+        }
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-3 font-semibold text-white">${emp.name}</td>
+            <td class="p-3 text-slate-400">${emp.visa_type || 'N/A'}</td>
+            <td class="p-3 text-slate-300">${emp.visa_expiry_date || 'Permanent Status'}</td>
+            <td class="p-3">${badge}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // VIEW: ATTENDANCE CLOCK IN/OUT
+    let clockedInState = false;
+    function loadAttendance() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const activeRecord = db.attendance.find(a => a.user_id === currentUser.id && a.date === todayStr && a.clock_out === '');
+      clockedInState = !!activeRecord;
+
+      const header = document.getElementById('attendance-state-title');
+      const btn = document.getElementById('clock-btn');
+
+      if (clockedInState) {
+        header.textContent = 'Shift Active (In Progress)';
+        btn.textContent = 'Stop Work Shift';
+        btn.className = 'flex items-center gap-2 rounded-lg bg-red-600 px-6 py-3 font-semibold text-sm text-white hover:bg-red-500 transition-all';
+      } else {
+        header.textContent = 'Outside Active Shift';
+        btn.textContent = 'Start Work Shift';
+        btn.className = 'flex items-center gap-2 rounded-lg bg-brand-500 px-6 py-3 font-semibold text-sm text-white hover:bg-brand-600 transition-all';
+      }
+
+      const tbody = document.getElementById('attendance-table-body');
+      tbody.innerHTML = '';
+      db.attendance.forEach(a => {
+        const staff = db.users.find(u => u.id === a.user_id);
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-3 font-semibold text-white">${staff ? staff.name : 'Unknown'}</td>
+            <td class="p-3 text-slate-400">${a.date}</td>
+            <td class="p-3 text-emerald-400 font-mono">${a.clock_in}</td>
+            <td class="p-3 text-slate-400 font-mono">${a.clock_out || 'Active Shift'}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function handleClockAction() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const nowStr = new Date().toTimeString().split(' ')[0].substring(0, 5);
+
+      if (clockedInState) {
+        const idx = db.attendance.findIndex(a => a.user_id === currentUser.id && a.date === todayStr && a.clock_out === '');
+        if (idx !== -1) {
+          db.attendance[idx].clock_out = nowStr;
+          saveDb();
+        }
+      } else {
+        db.attendance.push({
+          id: String(Date.now()),
+          user_id: currentUser.id,
+          date: todayStr,
+          clock_in: nowStr,
+          clock_out: ''
+        });
+        saveDb();
+      }
+      loadAttendance();
+    }
+
+    // VIEW: SCHEDULING ROTA
+    function loadScheduling() {
+      const select = document.getElementById('shift-user-select');
+      select.innerHTML = '';
+      db.users.filter(u => u.status !== 'Vacant').forEach(u => {
+        select.innerHTML += `<option value="${u.id}">${u.name} (${u.department})</option>`;
+      });
+
+      const container = document.getElementById('shifts-container');
+      container.innerHTML = '';
+      db.shifts.forEach(s => {
+        const staff = db.users.find(u => u.id === s.user_id);
+        container.innerHTML += `
+          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center">
+            <div>
+              <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Employee'}</p>
+              <span class="text-[10px] text-slate-500">${s.date} | ${s.start_time} - ${s.end_time}</span>
+            </div>
+            <div class="text-right">
+              <span class="rounded bg-slate-800 px-2 py-0.5 text-xs text-brand-500 border border-brand-500/10">
+                ${s.department}
+              </span>
+              <p class="text-[10px] text-slate-500 mt-1 italic">${s.notes || ''}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function handleCreateShift(e) {
+      e.preventDefault();
+      const payload = {
+        id: String(Date.now()),
+        user_id: document.getElementById('shift-user-select').value,
+        date: document.getElementById('shift-date').value,
+        start_time: document.getElementById('shift-start').value,
+        end_time: document.getElementById('shift-end').value,
+        department: document.getElementById('shift-dept').value,
+        notes: document.getElementById('shift-notes').value
+      };
+
+      db.shifts.push(payload);
+      saveDb();
+      loadScheduling();
+      document.getElementById('shift-notes').value = '';
+      alert('Shift assigned to rota.');
+    }
+
+    // VIEW: LEAVE WORKFLOWS
+    function loadLeave() {
+      const container = document.getElementById('leaves-container');
+      container.innerHTML = '';
+
+      db.leave.forEach(l => {
+        const staff = db.users.find(u => u.id === l.user_id);
+        const canAction = l.status === 'Pending' && currentUser.role !== 'Staff';
+
+        container.innerHTML += `
+          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center">
+            <div>
+              <div class="flex items-center gap-2">
+                <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Staff Member'}</p>
+                <span class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">${l.type}</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">${l.start_date} to ${l.end_date} (${l.total_days} days)</p>
+              <p class="text-xs text-slate-400 italic mt-1">"${l.reason}"</p>
+            </div>
+            <div class="flex items-center gap-2">
+              ${canAction ? `
+                <button onclick="updateLeaveStatus('${l.id}', 'Approved')" class="rounded bg-emerald-600/20 hover:bg-emerald-600 border border-emerald-500/20 px-2 py-1 text-xs text-emerald-400 hover:text-white transition-all">Approve</button>
+                <button onclick="updateLeaveStatus('${l.id}', 'Rejected')" class="rounded bg-red-600/20 hover:bg-red-600 border border-red-500/20 px-2 py-1 text-xs text-red-400 hover:text-white transition-all">Reject</button>
+              ` : `
+                <span class="px-2 py-0.5 rounded text-xs border ${
+                  l.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                  l.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-800 text-slate-400'
+                }">${l.status}</span>
+              `}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function handleRequestLeave(e) {
+      e.preventDefault();
+      const start = new Date(document.getElementById('leave-start').value);
+      const end = new Date(document.getElementById('leave-end').value);
+      const totalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+      const payload = {
+        id: String(Date.now()),
+        user_id: currentUser.id,
+        type: document.getElementById('leave-type').value,
+        start_date: document.getElementById('leave-start').value,
+        end_date: document.getElementById('leave-end').value,
+        total_days: totalDays,
+        reason: document.getElementById('leave-reason').value,
+        status: 'Pending'
+      };
+
+      db.leave.push(payload);
+      saveDb();
+      loadLeave();
+      document.getElementById('leave-reason').value = '';
+      alert('Leave request submitted.');
+    }
+
+    function updateLeaveStatus(id, status) {
+      const idx = db.leave.findIndex(l => l.id === id);
+      if (idx !== -1) {
+        db.leave[idx].status = status;
+        saveDb();
+        loadLeave();
+      }
+    }
+
+    // VIEW: PAYROLL
+    function loadPayroll() {
+      const tbody = document.getElementById('payroll-table-body');
+      tbody.innerHTML = '';
+
+      db.payroll.forEach(p => {
+        const staff = db.users.find(u => u.id === p.user_id);
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-4 font-semibold text-white">${staff ? staff.name : 'Employee'}</td>
+            <td class="p-4 text-slate-400">${p.period_start} to ${p.period_end}</td>
+            <td class="p-4 text-slate-300">${p.hours_worked} hrs</td>
+            <td class="p-4 text-slate-300">£${p.pay}</td>
+            <td class="p-4 text-red-400">-£${p.deductions}</td>
+            <td class="p-4 text-emerald-400 font-bold">£${p.net_pay}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // EXPORTS CSV LOG GENERATOR
+    function downloadReport(type) {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      if (type === 'roster') {
+        csvContent += "Name,Email,Role,Department,Rate\n";
+        db.users.forEach(e => {
+          csvContent += `"${e.name}","${e.email}","${e.role}","${e.department}","${e.hourly_rate}"\n`;
+        });
+      } else {
+        csvContent += "Name,Nationality,Visa Type,Expiry,Share Code\n";
+        db.users.forEach(e => {
+          csvContent += `"${e.name}","${e.nationality}","${e.visa_type || 'N/A'}","${e.visa_expiry_date || 'N/A'}","${e.share_code || 'N/A'}"\n`;
+        });
+      }
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", type + "_report.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // session validation check on load
+    const activeSession = sessionStorage.getItem('current_user');
+    if (activeSession) {
+      currentUser = JSON.parse(activeSession);
+      initWorkspace();
+    }
+  </script>
+</body>
+</html>
