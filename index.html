@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950 text-slate-100 dark">
 <head>
@@ -22,7 +23,7 @@
             brand: {
               50: '#fef2f2',
               100: '#fee2e2',
-              500: '#b91c1c', // Nawaab Crimson Red (matches turban brand color)
+              500: '#b91c1c', // Nawaab Crimson Red
               600: '#991b1b',
               700: '#7f1d1d',
               800: '#450a0a'
@@ -47,22 +48,17 @@
   <div id="auth-view" class="min-h-screen flex items-center justify-center bg-slate-950 px-4">
     <div class="w-full max-w-md space-y-8 rounded-2xl border border-slate-800 bg-slate-900/50 p-8 backdrop-blur-md">
       
-      <!-- Brand Header -->
-      <div class="text-center space-y-4">
-        <div class="flex flex-col items-center justify-center">
-          <img src="logo.png" id="login-image-logo" alt="Nawaab Logo" class="h-28 w-auto object-contain mx-auto transition-transform duration-200 hover:scale-105">
-          
-          <!-- Fallback Inline SVG Logo -->
-          <div id="login-svg-fallback" class="hidden flex flex-col items-center animate-fade-in">
-            <svg class="h-24 w-auto text-brand-500" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M100 20C75 20 60 35 60 55C60 62 65 68 72 70C75 62 82 55 90 52C92 48 95 45 100 45C108 45 115 52 115 60C115 68 108 75 100 75C95 75 92 72 90 68C82 72 75 80 72 90C85 95 100 95 115 90C125 80 135 68 135 55C135 35 120 20 100 20Z" fill="#b91c1c"/>
-              <path d="M100 10C100 10 108 18 105 25C102 32 95 35 95 35C95 35 105 32 110 25C115 18 100 10 100 10Z" fill="#991b1b"/>
-              <path d="M90 52C88 55 86 58 85 62C84 66 84 70 85 74C86 78 88 82 91 85C92 86 91 88 89 89C86 91 82 92 78 92C72 92 68 88 66 82C64 76 65 70 67 65C69 60 72 56 76 54C80 52 85 51 90 52Z" fill="#0f1322" stroke="#1d233a" stroke-width="2"/>
-              <path d="M72 90C70 94 68 98 65 100C60 103 55 103 50 101C46 99 44 95 44 90C44 82 48 75 54 70C60 65 67 65 72 70" fill="#000000"/>
-            </svg>
-            <h2 class="text-3xl font-serif font-extrabold tracking-tight text-white uppercase mt-2">NAWAAB</h2>
-            <p class="text-[10px] tracking-widest text-brand-500 uppercase font-semibold">AUTHENTIC INDIAN RESTAURANT</p>
-          </div>
+      <!-- Vector Brand Header (Loads natively with zero dependency issues) -->
+      <div class="text-center space-y-4 flex flex-col items-center justify-center">
+        <svg class="h-24 w-auto text-brand-500 animate-fade-in" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M100 20C75 20 60 35 60 55C60 62 65 68 72 70C75 62 82 55 90 52C92 48 95 45 100 45C108 45 115 52 115 60C115 68 108 75 100 75C95 75 92 72 90 68C82 72 75 80 72 90C85 95 100 95 115 90C125 80 135 68 135 55C135 35 120 20 100 20Z" fill="#b91c1c"/>
+          <path d="M100 10C100 10 108 18 105 25C102 32 95 35 95 35C95 35 105 32 110 25C115 18 100 10 100 10Z" fill="#991b1b"/>
+          <path d="M90 52C88 55 86 58 85 62C84 66 84 70 85 74C86 78 88 82 91 85C92 86 91 88 89 89C86 91 82 92 78 92C72 92 68 88 66 82C64 76 65 70 67 65C69 60 72 56 76 54C80 52 85 51 90 52Z" fill="#0f1322" stroke="#1d233a" stroke-width="2"/>
+          <path d="M72 90C70 94 68 98 65 100C60 103 55 103 50 101C46 99 44 95 44 90C44 82 48 75 54 70C60 65 67 65 72 70" fill="#000000"/>
+        </svg>
+        <div class="text-center">
+          <h2 class="text-3xl font-serif font-extrabold tracking-tight text-white uppercase">NAWAAB</h2>
+          <p class="text-[10px] tracking-widest text-brand-500 uppercase font-semibold">AUTHENTIC INDIAN RESTAURANT</p>
         </div>
         <span class="inline-block rounded-full bg-brand-500/10 px-3.5 py-1 text-xs font-semibold text-brand-100 border border-brand-500/20">
           UK HOME OFFICE RTW PORTAL
@@ -91,47 +87,74 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- 2. MAIN APPLICATION INTERFACE -->
+  <!-- MOBILE TOP BAR HEADER -->
+  <!-- ========================================== -->
+  <header id="mobile-header" class="hidden md:hidden bg-slate-950 border-b border-slate-800 px-4 py-3.5 flex items-center justify-between z-40">
+    <div class="flex items-center gap-2">
+      <div class="h-8 w-8 rounded bg-brand-500 flex items-center justify-center font-bold text-white shadow-lg">N</div>
+      <span class="text-sm font-serif font-bold text-white uppercase tracking-widest">NAWAAB</span>
+    </div>
+    <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white focus:outline-none">
+      <i data-lucide="menu" class="h-6 w-6"></i>
+    </button>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- MOBILE DRAWER MENU OVERLAY -->
+  <!-- ========================================== -->
+  <div id="mobile-menu-drawer" class="hidden fixed inset-0 z-50 flex">
+    <div onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+    <div class="relative w-64 max-w-xs bg-slate-950 border-r border-slate-800 p-6 flex flex-col justify-between h-full">
+      <div class="space-y-6">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+          <div class="flex items-center gap-2">
+            <div class="h-8 w-8 rounded bg-brand-500 flex items-center justify-center font-bold text-white shadow-lg">N</div>
+            <span class="text-xs font-serif font-bold text-white uppercase tracking-widest">NAWAAB</span>
+          </div>
+          <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white">
+            <i data-lucide="x" class="h-5 w-5"></i>
+          </button>
+        </div>
+        <nav id="mobile-nav" class="space-y-1">
+          <!-- Populated dynamically based on permissions -->
+        </nav>
+      </div>
+      <div class="border-t border-slate-800 pt-4 mt-6">
+        <div class="mb-4">
+          <p id="mobile-user-name" class="text-xs font-semibold text-white"></p>
+          <span id="mobile-user-role" class="text-[10px] text-brand-500 uppercase tracking-widest font-bold"></span>
+        </div>
+        <button onclick="logout(); toggleMobileMenu();" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-red-400 hover:bg-red-500/10 transition-all font-medium">
+          <i data-lucide="log-out" class="h-4 w-4"></i> Sign Out Session
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 3. MAIN WORKSPACE APP INTERFACE -->
   <!-- ========================================== -->
   <div id="workspace" class="hidden min-h-screen flex flex-col md:flex-row overflow-hidden">
     
-    <!-- SIDEBAR NAVIGATION -->
+    <!-- DESKTOP SIDEBAR -->
     <aside class="w-full md:w-64 border-r border-slate-800 bg-slate-950 p-6 flex flex-col justify-between hidden md:flex">
       <div class="space-y-6">
-        <!-- Sidebar Brand Header Area -->
-        <div class="flex flex-col items-center space-y-2 border-b border-slate-800 pb-6">
-          <img src="logo.png" id="sidebar-image-logo" alt="Nawaab Logo" class="h-20 w-auto object-contain mx-auto">
-          <div id="sidebar-svg-fallback" class="hidden flex flex-col items-center text-center animate-fade-in">
-            <h1 class="text-lg font-serif font-bold text-white tracking-widest uppercase">NAWAAB</h1>
+        <!-- Sidebar Brand Header Area (Vector only ensures perfect loading without png files) -->
+        <div class="flex flex-col items-center space-y-2 border-b border-slate-800 pb-6 text-center">
+          <svg class="h-16 w-auto text-brand-500" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 20C75 20 60 35 60 55C60 62 65 68 72 70C75 62 82 55 90 52C92 48 95 45 100 45C108 45 115 52 115 60C115 68 108 75 100 75C95 75 92 72 90 68C82 72 75 80 72 90C85 95 100 95 115 90C125 80 135 68 135 55C135 35 120 20 100 20Z" fill="#b91c1c"/>
+            <path d="M100 10C100 10 108 18 105 25C102 32 95 35 95 35C95 35 105 32 110 25C115 18 100 10 100 10Z" fill="#991b1b"/>
+            <path d="M90 52C88 55 86 58 85 62C84 66 84 70 85 74C86 78 88 82 91 85C92 86 91 88 89 89C86 91 82 92 78 92C72 92 68 88 66 82C64 76 65 70 67 65C69 60 72 56 76 54C80 52 85 51 90 52Z" fill="#0f1322" stroke="#1d233a" stroke-width="2"/>
+            <path d="M72 90C70 94 68 98 65 100C60 103 55 103 50 101C46 99 44 95 44 90C44 82 48 75 54 70C60 65 67 65 72 70" fill="#000000"/>
+          </svg>
+          <div class="flex flex-col items-center">
+            <h1 class="text-base font-serif font-bold text-white tracking-widest uppercase">NAWAAB</h1>
             <span class="text-[9px] tracking-widest text-brand-500 uppercase font-bold">AUTHENTIC INDIAN</span>
           </div>
         </div>
 
-        <nav class="space-y-1">
-          <button onclick="navigate('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
-            <i data-lucide="layout-dashboard" class="h-4 w-4"></i> Dashboard
-          </button>
-          <button onclick="navigate('employees')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
-            <i data-lucide="users" class="h-4 w-4"></i> Employees
-          </button>
-          <button onclick="navigate('compliance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
-            <i data-lucide="shield-check" class="h-4 w-4"></i> Compliance
-          </button>
-          <button onclick="navigate('attendance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
-            <i data-lucide="clock" class="h-4 w-4"></i> Attendance
-          </button>
-          <button onclick="navigate('scheduling')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
-            <i data-lucide="calendar" class="h-4 w-4"></i> Rota Schedule
-          </button>
-          <button onclick="navigate('leave')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
-            <i data-lucide="file-signature" class="h-4 w-4"></i> Leave Requests
-          </button>
-          <button onclick="navigate('payroll')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
-            <i data-lucide="landmark" class="h-4 w-4"></i> Payroll Records
-          </button>
-          <button onclick="navigate('reports')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
-            <i data-lucide="file-text" class="h-4 w-4"></i> Report Center
-          </button>
+        <nav id="desktop-nav" class="space-y-1">
+          <!-- Injected dynamically by role permissions -->
         </nav>
       </div>
 
@@ -170,35 +193,35 @@
 
         <!-- STATS CARDS -->
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Total Staff</span>
               <i data-lucide="users" class="h-5 w-5 text-indigo-400"></i>
             </div>
             <p id="stat-total-employees" class="mt-2 text-3xl font-bold">0</p>
           </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Clocked In Today</span>
               <i data-lucide="clock" class="h-5 w-5 text-emerald-400"></i>
             </div>
             <p id="stat-today-attendance" class="mt-2 text-3xl font-bold">0</p>
           </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Expiring Visas</span>
               <i data-lucide="alert-triangle" class="h-5 w-5 text-amber-500 animate-pulse"></i>
             </div>
             <p id="stat-visa-expiries" class="mt-2 text-3xl font-bold text-amber-500">0</p>
           </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Open Leave</span>
               <i data-lucide="file-clock" class="h-5 w-5 text-cyan-400"></i>
             </div>
             <p id="stat-upcoming-leave" class="mt-2 text-3xl font-bold">0</p>
           </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Missing RTW Docs</span>
               <i data-lucide="shield-alert" class="h-5 w-5 text-red-500"></i>
@@ -272,7 +295,7 @@
 
         <!-- ADD EMPLOYEE FORM -->
         <form id="add-employee-form" class="hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4" onsubmit="handleAddEmployee(event)">
-          <h2 class="text-lg font-semibold text-white">Personal & Employment Information</h2>
+          <h2 class="text-lg font-semibold text-white font-serif">Personal & Employment Information</h2>
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label class="block text-xs font-semibold text-slate-400">Full Name</label>
@@ -445,7 +468,7 @@
 
         <div class="grid gap-6 lg:grid-cols-3">
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-semibold text-white font-serif font-serif">Immigration & Rota Safeguards</h2>
+            <h2 class="text-lg font-semibold text-white font-serif">Immigration & Rota Safeguards</h2>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm text-slate-300">
                 <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
@@ -491,10 +514,44 @@
       <!-- VIEW: ATTENDANCE (FUNCTIONAL TERMINAL WITH DELETE OPTION) -->
       <!-- ========================================== -->
       <section id="view-attendance" class="view-panel hidden space-y-6">
-        <div>
-          <h1 class="text-2xl font-bold text-white font-serif">Work Clock Terminal</h1>
-          <p class="text-sm text-slate-400">Log daily work hours and check shift timings</p>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-6 gap-4">
+          <div>
+            <h1 class="text-2xl font-bold text-white font-serif">Work Clock Terminal</h1>
+            <p class="text-sm text-slate-400">Log daily work hours and check shift timings</p>
+          </div>
+          <!-- Manual attendance button for managers -->
+          <button id="add-attendance-btn" onclick="toggleForm('add-attendance-form')" class="rounded-lg bg-brand-500 px-4 py-2.5 text-xs font-semibold text-white hover:bg-brand-600 transition-all hidden animate-fade-in">
+            Add Manual Attendance
+          </button>
         </div>
+
+        <!-- MANUAL ATTENDANCE FORM (DIRECTORS & MANAGERS ONLY) -->
+        <form id="add-attendance-form" class="hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4 animate-fade-in" onsubmit="handleLogManualAttendance(event)">
+          <h2 class="text-lg font-semibold text-white font-serif">Add Manual Attendance Log</h2>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Select Employee</label>
+              <select id="att-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Date</label>
+              <input id="att-manual-date" required type="date" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Clock In Time</label>
+              <input id="att-manual-in" required type="time" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400">Clock Out Time</label>
+              <input id="att-manual-out" required type="time" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+            </div>
+          </div>
+          <button type="submit" class="rounded bg-brand-500 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-600">
+            Record Manual Log
+          </button>
+        </form>
 
         <div class="grid gap-6 lg:grid-cols-3">
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 flex flex-col items-center justify-center space-y-4">
@@ -548,7 +605,7 @@
             <form onsubmit="handleCreateShift(event)" class="space-y-4">
               <div>
                 <label class="block text-xs font-semibold text-slate-400">Employee</label>
-                <select id="shift-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+                <select id="shift-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 font-medium">
                   <!-- Dynamic list of employees -->
                 </select>
               </div>
@@ -608,7 +665,7 @@
             <form onsubmit="handleRequestLeave(event)" class="space-y-4">
               <div>
                 <label class="block text-xs font-semibold text-slate-400">Leave Category</label>
-                <select id="leave-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+                <select id="leave-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 font-medium">
                   <option value="Annual Leave">Annual Leave</option>
                   <option value="Sick Leave">Sick Leave</option>
                   <option value="Emergency Leave">Emergency Leave</option>
@@ -660,11 +717,11 @@
 
         <!-- GENERATE PAYROLL LOG FORM -->
         <form id="add-payroll-form" class="hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4" onsubmit="handleAddPayroll(event)">
-          <h2 class="text-lg font-semibold text-white">Generate Payroll Log</h2>
+          <h2 class="text-lg font-semibold text-white font-serif">Generate Payroll Log</h2>
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label class="block text-xs font-semibold text-slate-400">Select Employee</label>
-              <select id="pay-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
+              <select id="pay-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
                 <!-- Dynamically loaded staff -->
               </select>
             </div>
@@ -858,27 +915,24 @@
     let db = {};
     let currentUser = null;
     let firebaseDb = null;
+    let mobileMenuState = false;
 
-    // Direct image handler error capture triggers before script tags compiled [1]
-    window.addEventListener('DOMContentLoaded', () => {
-      const loginImg = document.getElementById('login-image-logo');
-      if (loginImg) {
-        loginImg.onerror = () => {
-          loginImg.style.display = 'none';
-          const fallback = document.getElementById('login-svg-fallback');
-          if (fallback) fallback.classList.remove('hidden');
-        };
+    // MOBILE NAVIGATION DRAWER HELPERS [1]
+    function toggleMobileMenu() {
+      const drawer = document.getElementById('mobile-menu-drawer');
+      mobileMenuState = !mobileMenuState;
+      if (mobileMenuState) {
+        drawer.classList.remove('hidden');
+      } else {
+        drawer.classList.add('hidden');
       }
-      
-      const sidebarImg = document.getElementById('sidebar-image-logo');
-      if (sidebarImg) {
-        sidebarImg.onerror = () => {
-          sidebarImg.style.display = 'none';
-          const fallback = document.getElementById('sidebar-svg-fallback');
-          if (fallback) fallback.classList.remove('hidden');
-        };
+    }
+
+    function closeMobileMenuIfNeeded() {
+      if (mobileMenuState) {
+        toggleMobileMenu();
       }
-    });
+    }
 
     // Seed default Nawaab datasets with defensive initialization to secure older DB updates
     function initDatabase() {
@@ -1035,49 +1089,178 @@
       }
     }
 
+    // Dynamic Navigation Builder based strictly on role permissions [1]
+    function buildNavigationMenus() {
+      const links = [
+        { name: 'Dashboard', path: 'dashboard', icon: 'layout-dashboard', roles: ['Owner', 'Manager', 'Staff'] },
+        { name: 'Employees', path: 'employees', icon: 'users', roles: ['Owner', 'Manager'] },
+        { name: 'Compliance', path: 'compliance', icon: 'shield-check', roles: ['Owner', 'Manager'] },
+        { name: 'Attendance', path: 'attendance', icon: 'clock', roles: ['Owner', 'Manager', 'Staff'] },
+        { name: 'Scheduling', path: 'scheduling', icon: 'calendar', roles: ['Owner', 'Manager', 'Staff'] },
+        { name: 'Leave Requests', path: 'leave', icon: 'file-signature', roles: ['Owner', 'Manager', 'Staff'] },
+        { name: 'Payroll', path: 'payroll', icon: 'landmark', roles: ['Owner'] },
+        { name: 'Report Center', path: 'reports', icon: 'file-text', roles: ['Owner'] }
+      ];
+
+      const role = currentUser ? currentUser.role : 'Staff';
+      const desktopNav = document.getElementById('desktop-nav');
+      const mobileNav = document.getElementById('mobile-nav');
+
+      if (desktopNav) desktopNav.innerHTML = '';
+      if (mobileNav) mobileNav.innerHTML = '';
+
+      links.forEach(link => {
+        if (link.roles.includes(role)) {
+          const btnHtml = `
+            <button onclick="navigate('${link.path}'); closeMobileMenuIfNeeded();" class="nav-btn-${link.path} nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+              <i data-lucide="${link.icon}" class="h-4 w-4"></i> ${link.name}
+            </button>
+          `;
+          if (desktopNav) desktopNav.innerHTML += btnHtml;
+          if (mobileNav) mobileNav.innerHTML += btnHtml;
+        }
+      });
+      lucide.createIcons();
+    }
+
     // ==========================================
-    // DATA BINDINGS & VIEW CONTROLLERS
+    // 5. ROUTER NAVIGATION (WITH ACCESS RULES)
+    // ==========================================
+    const roleRules = {
+      dashboard: ['Owner', 'Manager', 'Staff'],
+      employees: ['Owner', 'Manager'],
+      compliance: ['Owner', 'Manager'],
+      attendance: ['Owner', 'Manager', 'Staff'],
+      scheduling: ['Owner', 'Manager', 'Staff'],
+      leave: ['Owner', 'Manager', 'Staff'],
+      payroll: ['Owner'],
+      reports: ['Owner'],
+      profile: ['Owner', 'Manager', 'Staff']
+    };
+
+    function navigate(viewId) {
+      const role = currentUser ? currentUser.role : 'Staff';
+      if (roleRules[viewId] && !roleRules[viewId].includes(role)) {
+        console.warn(`Blocked unauthorized navigation to: ${viewId}`);
+        navigate('dashboard');
+        return;
+      }
+
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-brand-500/10', 'text-brand-500', 'border', 'border-brand-500/20'));
+
+      const currentPanel = document.getElementById('view-' + viewId);
+      if (currentPanel) {
+        currentPanel.classList.remove('hidden');
+      }
+
+      // Highlight active navigation links
+      document.querySelectorAll('.nav-btn-' + viewId).forEach(btn => {
+        btn.classList.add('bg-brand-500/10', 'text-brand-500', 'border', 'border-brand-500/20');
+      });
+
+      lucide.createIcons();
+
+      // UI update hooks
+      if (viewId === 'dashboard') loadDashboard();
+      if (viewId === 'employees') loadEmployees();
+      if (viewId === 'compliance') loadCompliance();
+      if (viewId === 'attendance') loadAttendance();
+      if (viewId === 'scheduling') loadScheduling();
+      if (viewId === 'leave') loadLeave();
+      if (viewId === 'payroll') loadPayroll();
+    }
+
+    // ==========================================
+    // 6. OPERATION FLOW PANELS
     // ==========================================
 
-    // VIEW: DASHBOARD
+    // VIEW: DASHBOARD (STAFF PRIVACY FILTER APPLIED) [1]
     function loadDashboard() {
-      const activeStaff = db.users.filter(u => u.status !== 'Vacant' && u.status !== 'Terminated');
-      document.getElementById('stat-total-employees').textContent = activeStaff.length;
+      const isStaff = currentUser && currentUser.role === 'Staff';
 
-      const todayStr = new Date().toISOString().split('T')[0];
-      const todayAttendance = db.attendance.filter(a => a.date === todayStr).length;
-      document.getElementById('stat-today-attendance').textContent = todayAttendance;
+      if (isStaff) {
+        // Staff Dashboard - Shows only their own operational stats [1]
+        document.getElementById('stat-total-employees').parentElement.classList.add('hidden');
+        document.getElementById('stat-today-attendance').parentElement.classList.add('hidden');
+        document.getElementById('stat-visa-expiries').parentElement.classList.add('hidden');
+        document.getElementById('stat-missing-docs').parentElement.classList.add('hidden');
 
-      const visaExpiries = db.users.filter(emp => {
-        if (!emp.visa_expiry_date) return false;
-        const diff = new Date(emp.visa_expiry_date) - new Date();
-        return diff > 0 && diff <= 90 * 24 * 60 * 60 * 1000;
-      }).length;
-      document.getElementById('stat-visa-expiries').textContent = visaExpiries;
+        // Swap out total stats with Personal Hours and Leave balances
+        const personalHours = db.attendance
+          .filter(a => a.user_id === currentUser.id)
+          .reduce((sum, current) => sum + 8, 0); // Mocking 8 hours per clock log
 
-      const openLeave = db.leave.filter(l => l.status === 'Pending').length;
-      document.getElementById('stat-upcoming-leave').textContent = openLeave;
+        document.getElementById('stat-upcoming-leave').parentElement.querySelector('span').textContent = 'TOTAL WORK HOURS';
+        document.getElementById('stat-upcoming-leave').textContent = personalHours + ' hrs';
+      } else {
+        document.getElementById('stat-total-employees').parentElement.classList.remove('hidden');
+        document.getElementById('stat-today-attendance').parentElement.classList.remove('hidden');
+        document.getElementById('stat-visa-expiries').parentElement.classList.remove('hidden');
+        document.getElementById('stat-missing-docs').parentElement.classList.remove('hidden');
+        document.getElementById('stat-upcoming-leave').parentElement.querySelector('span').textContent = 'OPEN LEAVE';
 
-      const missingDocs = db.users.filter(emp => !emp.share_code && emp.nationality !== 'British' && emp.status !== 'Vacant').length;
-      document.getElementById('stat-missing-docs').textContent = missingDocs;
+        const activeStaff = db.users.filter(u => u.status !== 'Vacant' && u.status !== 'Terminated');
+        document.getElementById('stat-total-employees').textContent = activeStaff.length;
 
+        const todayStr = new Date().toISOString().split('T')[0];
+        const todayAttendance = db.attendance.filter(a => a.date === todayStr).length;
+        document.getElementById('stat-today-attendance').textContent = todayAttendance;
+
+        const visaExpiries = db.users.filter(emp => {
+          if (!emp.visa_expiry_date) return false;
+          const diff = new Date(emp.visa_expiry_date) - new Date();
+          return diff > 0 && diff <= 90 * 24 * 60 * 60 * 1000;
+        }).length;
+        document.getElementById('stat-visa-expiries').textContent = visaExpiries;
+
+        const openLeave = db.leave.filter(l => l.status === 'Pending').length;
+        document.getElementById('stat-upcoming-leave').textContent = openLeave;
+
+        const missingDocs = db.users.filter(emp => !emp.share_code && emp.nationality !== 'British' && emp.status !== 'Vacant').length;
+        document.getElementById('stat-missing-docs').textContent = missingDocs;
+      }
+
+      // Populate recent table
       const recentBody = document.getElementById('dashboard-recent-employees');
       recentBody.innerHTML = '';
-      db.users.slice(0, 4).forEach(emp => {
-        recentBody.innerHTML += `
-          <tr class="hover:bg-slate-900/40">
-            <td class="p-3 font-semibold text-white">${emp.name}</td>
-            <td class="p-3 text-slate-400">${emp.department}</td>
-            <td class="p-3 text-slate-400">${emp.job_title}</td>
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
-                emp.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400' :
-                emp.status === 'Vacant' ? 'bg-slate-800 text-slate-400' : 'bg-red-500/10 text-red-400'
-              }">${emp.status}</span>
-            </td>
-          </tr>
-        `;
-      });
+
+      if (isStaff) {
+        // Staff only see their own scheduled roster shifts [1]
+        document.getElementById('dashboard-recent-employees').parentElement.parentElement.querySelector('h2').textContent = 'Your Rota Calendar';
+        const myShifts = db.shifts.filter(s => s.user_id === currentUser.id);
+        if (myShifts.length === 0) {
+          recentBody.innerHTML = `<tr><td colspan="4" class="p-3 text-slate-500 text-center">No shifts assigned to your profile.</td></tr>`;
+        } else {
+          myShifts.forEach(s => {
+            recentBody.innerHTML += `
+              <tr class="hover:bg-slate-900/40">
+                <td class="p-3 font-semibold text-white">${currentUser.name}</td>
+                <td class="p-3 text-slate-400">${s.department}</td>
+                <td class="p-3 text-slate-400">${s.start_time} - ${s.end_time}</td>
+                <td class="p-3 text-slate-400">${s.date}</td>
+              </tr>
+            `;
+          });
+        }
+      } else {
+        document.getElementById('dashboard-recent-employees').parentElement.parentElement.querySelector('h2').textContent = 'Recent Team Additions';
+        db.users.slice(0, 4).forEach(emp => {
+          recentBody.innerHTML += `
+            <tr class="hover:bg-slate-900/40">
+              <td class="p-3 font-semibold text-white">${emp.name}</td>
+              <td class="p-3 text-slate-400">${emp.department}</td>
+              <td class="p-3 text-slate-400">${emp.job_title}</td>
+              <td class="p-3">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                  emp.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400' :
+                  emp.status === 'Vacant' ? 'bg-slate-800 text-slate-400' : 'bg-red-500/10 text-red-400'
+                }">${emp.status}</span>
+              </td>
+            </tr>
+          `;
+        });
+      }
     }
 
     // VIEW: EMPLOYEES DIRECTORY
@@ -1192,7 +1375,7 @@
       }
     }
 
-    // VIEW: EMPLOYEE PROFILE COMPLIANCE TRACKING
+    // VIEW: EMPLOYEE PROFILE COMPLIANCE TRACKING (RESTRICTED SAVE CONTROL) [1]
     function viewProfile(id) {
       const emp = db.users.find(u => u.id === id);
       if (!emp) return;
@@ -1206,40 +1389,24 @@
       document.getElementById('prof-visa-expiry').value = emp.visa_expiry_date || '';
       document.getElementById('prof-share-code').value = emp.share_code || '';
 
+      const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
+      const compBtn = document.getElementById('prof-comp-btn');
+      const uploadForm = document.getElementById('prof-upload-form');
+
+      // Secure Right-to-Work editing locks from Staff [1]
+      if (isManagerOrOwner) {
+        if (compBtn) compBtn.classList.remove('hidden');
+        if (uploadForm) uploadForm.classList.remove('hidden');
+        document.getElementById('profile-compliance-form').querySelectorAll('input, select').forEach(el => el.disabled = false);
+      } else {
+        if (compBtn) compBtn.classList.add('hidden');
+        if (uploadForm) uploadForm.classList.add('hidden');
+        document.getElementById('profile-compliance-form').querySelectorAll('input, select').forEach(el => el.disabled = true);
+      }
+
       loadCategoriesDropdown();
       loadDocumentsList(emp.id);
       navigate('profile');
-    }
-
-    // Dynamic Category Manager loader [1]
-    function loadCategoriesDropdown() {
-      const select = document.getElementById('prof-doc-type');
-      if (!select) return;
-      select.innerHTML = '';
-      
-      if (!db.categories) {
-        db.categories = ["Passport", "Visa", "Right-to-Work", "Contract", "Certificate"];
-      }
-
-      db.categories.forEach(cat => {
-        select.innerHTML += `<option value="${cat}">${cat}</option>`;
-      });
-    }
-
-    function handleAddCategoryPrompt() {
-      const input = document.getElementById('new-custom-category');
-      const cleanCat = input.value.trim();
-      if (cleanCat === "") return;
-
-      if (!db.categories.includes(cleanCat)) {
-        db.categories.push(cleanCat);
-        saveDb();
-        loadCategoriesDropdown();
-        input.value = '';
-        alert(`Category "${cleanCat}" successfully registered.`);
-      } else {
-        alert("This category is already registered in your vault.");
-      }
     }
 
     // Load Documents with Delete Action
@@ -1281,10 +1448,8 @@
       
       const link = document.createElement('a');
       if (doc.file_data) {
-        // Standard data URI (base64) download
         link.href = doc.file_data;
       } else {
-        // Fallback for mock seeded documents
         const content = `Simulated UK RTW Document Record: ${doc.file_name}`;
         const blob = new Blob([content], { type: 'text/plain' });
         link.href = URL.createObjectURL(blob);
@@ -1336,7 +1501,7 @@
           user_id: userId,
           type: type,
           file_name: file.name,
-          file_data: base64Data // Preserved format base64 string
+          file_data: base64Data
         });
         saveDb();
         loadDocumentsList(userId);
@@ -1372,7 +1537,7 @@
       });
     }
 
-    // VIEW: ATTENDANCE CLOCK IN/OUT (WITH TRASH ACTION EXPORT) [1]
+    // VIEW: ATTENDANCE (STAFF PRIVACY FILTER & MANUAL TIME SELECTION INPUT) [1]
     let clockedInState = false;
     function loadAttendance() {
       const todayStr = new Date().toISOString().split('T')[0];
@@ -1382,6 +1547,16 @@
       const header = document.getElementById('attendance-state-title');
       const btn = document.getElementById('clock-btn');
       const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
+
+      if (isManagerOrOwner) {
+        const attFormBtn = document.getElementById('add-attendance-btn');
+        if (attFormBtn) attFormBtn.classList.remove('hidden');
+        populateManualAttendanceDropdown();
+      } else {
+        const attFormBtn = document.getElementById('add-attendance-btn');
+        if (attFormBtn) attFormBtn.classList.add('hidden');
+        document.getElementById('add-attendance-form').classList.add('hidden');
+      }
 
       if (clockedInState) {
         header.textContent = 'Shift Active (In Progress)';
@@ -1395,10 +1570,16 @@
 
       const tbody = document.getElementById('attendance-table-body');
       tbody.innerHTML = '';
-      db.attendance.forEach(a => {
+
+      // Privacy rule filter: Staff can only see their own clock logs [1]
+      const logs = currentUser.role === 'Staff' 
+        ? db.attendance.filter(a => a.user_id === currentUser.id)
+        : db.attendance;
+
+      logs.forEach(a => {
         const staff = db.users.find(u => u.id === a.user_id);
         tbody.innerHTML += `
-          <tr class="hover:bg-slate-900/40">
+          <tr class="hover:bg-slate-900/40 animate-fade-in">
             <td class="p-3 font-semibold text-white">${staff ? staff.name : 'Unknown'}</td>
             <td class="p-3 text-slate-400">${a.date}</td>
             <td class="p-3 text-emerald-400 font-mono font-semibold">${a.clock_in}</td>
@@ -1414,6 +1595,36 @@
         `;
       });
       lucide.createIcons();
+    }
+
+    function populateManualAttendanceDropdown() {
+      const select = document.getElementById('att-user-select');
+      if (!select) return;
+      select.innerHTML = '';
+      db.users.filter(u => u.status !== 'Vacant' && u.status !== 'Terminated').forEach(u => {
+        select.innerHTML += `<option value="${u.id}">${u.name}</option>`;
+      });
+    }
+
+    function handleLogManualAttendance(e) {
+      e.preventDefault();
+      const userId = document.getElementById('att-user-select').value;
+      const date = document.getElementById('att-manual-date').value;
+      const clockIn = document.getElementById('att-manual-in').value;
+      const clockOut = document.getElementById('att-manual-out').value;
+
+      db.attendance.push({
+        id: String(Date.now()),
+        user_id: userId,
+        date: date,
+        clock_in: clockIn,
+        clock_out: clockOut
+      });
+      saveDb();
+      loadAttendance();
+      document.getElementById('add-attendance-form').reset();
+      document.getElementById('add-attendance-form').classList.add('hidden');
+      alert('Manual operational hours recorded.');
     }
 
     function handleClockAction() {
@@ -1446,42 +1657,57 @@
       loadAttendance();
     }
 
-    // VIEW: SCHEDULING ROTA (WITH ROTATIONAL DELETION ACTION)
+    // VIEW: SCHEDULING ROTA (WITH PRIVACY SHIELD FOR STAFF) [1]
     function loadScheduling() {
       const select = document.getElementById('shift-user-select');
-      if (select) {
-        select.innerHTML = '';
-        db.users.filter(u => u.status !== 'Vacant').forEach(u => {
-          select.innerHTML += `<option value="${u.id}">${u.name} (${u.department})</option>`;
-        });
+      const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
+
+      if (isManagerOrOwner) {
+        document.getElementById('assign-shift-panel').classList.remove('hidden');
+        if (select) {
+          select.innerHTML = '';
+          db.users.filter(u => u.status !== 'Vacant').forEach(u => {
+            select.innerHTML += `<option value="${u.id}">${u.name} (${u.department})</option>`;
+          });
+        }
+      } else {
+        document.getElementById('assign-shift-panel').classList.add('hidden');
       }
 
       const container = document.getElementById('shifts-container');
       container.innerHTML = '';
-      const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
 
-      db.shifts.forEach(s => {
-        const staff = db.users.find(u => u.id === s.user_id);
-        container.innerHTML += `
-          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
-            <div>
-              <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Employee'}</p>
-              <span class="text-[10px] text-slate-500">${s.date} | ${s.start_time} - ${s.end_time}</span>
+      // Privacy rule filter: Staff can only see their own rota schedule shifts [1]
+      const rota = currentUser.role === 'Staff'
+        ? db.shifts.filter(s => s.user_id === currentUser.id)
+        : db.shifts;
+
+      if (rota.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 py-3 text-center">No rota logs found.</p>`;
+      } else {
+        rota.forEach(s => {
+          const staff = db.users.find(u => u.id === s.user_id);
+          container.innerHTML += `
+            <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
+              <div>
+                <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Employee'}</p>
+                <span class="text-[10px] text-slate-500">${s.date} | ${s.start_time} - ${s.end_time}</span>
+              </div>
+              <div class="text-right flex flex-col items-end gap-1">
+                <span class="rounded bg-slate-800 px-2 py-0.5 text-xs text-brand-500 border border-brand-500/10 font-bold">
+                  ${s.department}
+                </span>
+                <p class="text-[10px] text-slate-500 italic mt-0.5">${s.notes || ''}</p>
+                ${isManagerOrOwner ? `
+                  <button onclick="handleDeleteShift('${s.id}')" class="text-[10px] text-red-500 hover:text-red-400 font-bold flex items-center gap-1 mt-1 transition-colors">
+                    <i data-lucide="trash-2" class="h-3 w-3"></i> Delete
+                  </button>
+                ` : ''}
+              </div>
             </div>
-            <div class="text-right flex flex-col items-end gap-1">
-              <span class="rounded bg-slate-800 px-2 py-0.5 text-xs text-brand-500 border border-brand-500/10 font-bold">
-                ${s.department}
-              </span>
-              <p class="text-[10px] text-slate-500 italic mt-0.5">${s.notes || ''}</p>
-              ${isManagerOrOwner ? `
-                <button onclick="handleDeleteShift('${s.id}')" class="text-[10px] text-red-500 hover:text-red-400 font-bold flex items-center gap-1 mt-1 transition-colors">
-                  <i data-lucide="trash-2" class="h-3 w-3"></i> Delete
-                </button>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      });
+          `;
+        });
+      }
       lucide.createIcons();
     }
 
@@ -1511,47 +1737,56 @@
       alert('Shift assigned to rota.');
     }
 
-    // VIEW: LEAVE WORKFLOWS (WITH CANCEL REQUEST ACTION)
+    // VIEW: LEAVE WORKFLOWS (WITH CANCEL REQUEST ACTION) [1]
     function loadLeave() {
       const container = document.getElementById('leaves-container');
       container.innerHTML = '';
       const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
 
-      db.leave.forEach(l => {
-        const staff = db.users.find(u => u.id === l.user_id);
-        const canAction = l.status === 'Pending' && isManagerOrOwner;
+      // Privacy rule filter: Staff can only see their own leave requests [1]
+      const list = currentUser.role === 'Staff'
+        ? db.leave.filter(l => l.user_id === currentUser.id)
+        : db.leave;
 
-        container.innerHTML += `
-          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
-            <div>
-              <div class="flex items-center gap-2">
-                <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Staff Member'}</p>
-                <span class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">${l.type}</span>
+      if (list.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 py-3 text-center">No leave records registered.</p>`;
+      } else {
+        list.forEach(l => {
+          const staff = db.users.find(u => u.id === l.user_id);
+          const canAction = l.status === 'Pending' && isManagerOrOwner;
+
+          container.innerHTML += `
+            <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
+              <div>
+                <div class="flex items-center gap-2">
+                  <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Staff Member'}</p>
+                  <span class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">${l.type}</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">${l.start_date} to ${l.end_date} (${l.total_days} days)</p>
+                <p class="text-xs text-slate-400 italic mt-1">"${l.reason}"</p>
               </div>
-              <p class="text-xs text-slate-500 mt-1">${l.start_date} to ${l.end_date} (${l.total_days} days)</p>
-              <p class="text-xs text-slate-400 italic mt-1">"${l.reason}"</p>
-            </div>
-            <div class="flex flex-col items-end gap-2">
-              <div class="flex items-center gap-2">
-                ${canAction ? `
-                  <button onclick="updateLeaveStatus('${l.id}', 'Approved')" class="rounded bg-emerald-600/20 hover:bg-emerald-600 border border-emerald-500/20 px-2 py-1 text-xs text-emerald-400 hover:text-white transition-all font-semibold">Approve</button>
-                  <button onclick="updateLeaveStatus('${l.id}', 'Rejected')" class="rounded bg-red-600/20 hover:bg-red-600 border border-red-500/20 px-2 py-1 text-xs text-red-400 hover:text-white transition-all font-semibold">Reject</button>
-                ` : `
-                  <span class="px-2 py-0.5 rounded text-xs border ${
-                    l.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                    l.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-800 text-slate-400'
-                  }">${l.status}</span>
-                `}
+              <div class="flex flex-col items-end gap-2">
+                <div class="flex items-center gap-2">
+                  ${canAction ? `
+                    <button onclick="updateLeaveStatus('${l.id}', 'Approved')" class="rounded bg-emerald-600/20 hover:bg-emerald-600 border border-emerald-500/20 px-2 py-1 text-xs text-emerald-400 hover:text-white transition-all font-semibold">Approve</button>
+                    <button onclick="updateLeaveStatus('${l.id}', 'Rejected')" class="rounded bg-red-600/20 hover:bg-red-600 border border-red-500/20 px-2 py-1 text-xs text-red-400 hover:text-white transition-all font-semibold">Reject</button>
+                  ` : `
+                    <span class="px-2 py-0.5 rounded text-xs border ${
+                      l.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                      l.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-800 text-slate-400'
+                    }">${l.status}</span>
+                  `}
+                </div>
+                ${isManagerOrOwner ? `
+                  <button onclick="handleDeleteLeave('${l.id}')" class="text-[10px] text-red-500 hover:text-red-400 font-bold flex items-center gap-1 transition-colors">
+                    <i data-lucide="trash-2" class="h-3 w-3"></i> Delete
+                  </button>
+                ` : ''}
               </div>
-              ${isManagerOrOwner ? `
-                <button onclick="handleDeleteLeave('${l.id}')" class="text-[10px] text-red-500 hover:text-red-400 font-bold flex items-center gap-1 transition-colors">
-                  <i data-lucide="trash-2" class="h-3 w-3"></i> Delete
-                </button>
-              ` : ''}
             </div>
-          </div>
-        `;
-      });
+          `;
+        });
+      }
       lucide.createIcons();
     }
 
@@ -1715,7 +1950,17 @@
 
     // Launch Workspace UI if session verified
     if (currentUser) {
+      // Dynamic rendering of left side-menus [1]
+      buildNavigationMenus();
       initWorkspace();
+      
+      // Sync mobile view details [1]
+      const mHeader = document.getElementById('mobile-header');
+      const mName = document.getElementById('mobile-user-name');
+      const mRole = document.getElementById('mobile-user-role');
+      if (mHeader) mHeader.classList.remove('hidden');
+      if (mName) mName.textContent = currentUser.name;
+      if (mRole) mRole.textContent = currentUser.role === 'Owner' ? 'Director' : currentUser.role;
     }
   </script>
 </body>
