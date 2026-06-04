@@ -867,9 +867,70 @@
     };
 
     const DB_KEY = 'nawaab_restaurant_db';
+    const DOC_STORE_DB = 'nawaab_document_files';
+    const DOC_STORE_NAME = 'files';
     let db = {};
     let currentUser = null;
     let firebaseDb = null;
+
+    function openDocumentStore() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DOC_STORE_DB, 1);
+        request.onupgradeneeded = () => {
+          request.result.createObjectStore(DOC_STORE_NAME);
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveDocumentBlob(docId, file) {
+      const storeDb = await openDocumentStore();
+      return new Promise((resolve, reject) => {
+        const tx = storeDb.transaction(DOC_STORE_NAME, 'readwrite');
+        tx.objectStore(DOC_STORE_NAME).put(file, docId);
+        tx.oncomplete = () => {
+          storeDb.close();
+          resolve();
+        };
+        tx.onerror = () => {
+          storeDb.close();
+          reject(tx.error);
+        };
+      });
+    }
+
+    async function getDocumentBlob(docId) {
+      const storeDb = await openDocumentStore();
+      return new Promise((resolve, reject) => {
+        const tx = storeDb.transaction(DOC_STORE_NAME, 'readonly');
+        const request = tx.objectStore(DOC_STORE_NAME).get(docId);
+        request.onsuccess = () => {
+          storeDb.close();
+          resolve(request.result);
+        };
+        request.onerror = () => {
+          storeDb.close();
+          reject(request.error);
+        };
+      });
+    }
+
+    async function deleteDocumentBlob(docId) {
+      const storeDb = await openDocumentStore();
+      return new Promise((resolve, reject) => {
+        const tx = storeDb.transaction(DOC_STORE_NAME, 'readwrite');
+        tx.objectStore(DOC_STORE_NAME).delete(docId);
+        tx.oncomplete = () => {
+          storeDb.close();
+          resolve();
+        };
+        tx.onerror = () => {
+          storeDb.close();
+          reject(tx.error);
+        };
+      });
+    }
 
     // DUAL LOGO RENDER ENGINE (Checks if local file logo.png is loaded, falls back to SVG)
     function showLoginSvgFallback() {
@@ -953,17 +1014,32 @@
         ];
         saveDb();
       }
+
+      if (db.documents.some(doc => doc.file_data)) {
+        saveDb();
+      }
+    }
+
+    function dbForStorage() {
+      return {
+        ...db,
+        documents: Array.isArray(db.documents)
+          ? db.documents.map(({ file_data, ...doc }) => doc)
+          : []
+      };
     }
 
     // Connects database write tasks to either LocalStorage or Firebase Realtime DB
     function saveDb() {
-      localStorage.setItem(DB_KEY, JSON.stringify(db));
+      const cleanDb = dbForStorage();
+      localStorage.setItem(DB_KEY, JSON.stringify(cleanDb));
       if (USE_FIREBASE && firebaseDb) {
-        firebaseDb.ref('nawaab_restaurant_db').set(db).catch(err => {
+        firebaseDb.ref('nawaab_restaurant_db').set(cleanDb).catch(err => {
           console.error("Firebase Sync Write Failed:", err);
           alert("Firebase Save Failed! Make sure database Rules are set to true in Firebase Console.\n\nError: " + err.message);
         });
       }
+      return true;
     }
 
     // Helper to refresh database values in active views without reloading the page
@@ -1002,7 +1078,7 @@
           const val = snapshot.val();
           if (val) {
             db = val;
-            localStorage.setItem(DB_KEY, JSON.stringify(db));
+            localStorage.setItem(DB_KEY, JSON.stringify(dbForStorage()));
             refreshActiveView();
           } else {
             // Firebase is empty! Push local state to cloud [1]
@@ -1459,17 +1535,27 @@
       return new Blob([bytes], { type: mimeType });
     }
 
-    function downloadStoredDoc(event, docId) {
+    async function downloadStoredDoc(event, docId) {
       if (event) event.preventDefault();
       const doc = db.documents.find(d => d.id === docId);
       if (!doc) return;
 
-      if (!doc.file_data) {
-        alert('This record was saved before real file downloads were added. Please delete it and upload the original file again.');
+      let blob = null;
+      try {
+        blob = await getDocumentBlob(docId);
+      } catch (err) {
+        console.error('Document file read failed:', err);
+      }
+
+      if (!blob && doc.file_data) {
+        blob = base64ToBlob(doc.file_data, doc.file_type);
+      }
+
+      if (!blob) {
+        alert('This record does not have the original file saved. Please delete it and upload the original file again.');
         return;
       }
 
-      const blob = base64ToBlob(doc.file_data, doc.file_type);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -1484,6 +1570,7 @@
     function handleDeleteDoc(docId, userId) {
       if (!confirm('Are you sure you want to delete this document?')) return;
       db.documents = db.documents.filter(d => d.id !== docId);
+      deleteDocumentBlob(docId).catch(err => console.error('Document file delete failed:', err));
       saveDb();
       loadDocumentsList(userId);
     }
@@ -1511,34 +1598,27 @@
 
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const payload = {
-          id: String(Date.now()),
-          user_id: userId,
-          type: type,
-          file_name: file.name,
-          file_type: file.type || 'application/octet-stream',
-          file_size: file.size,
-          file_data: reader.result
-        };
+      const payload = {
+        id: String(Date.now()),
+        user_id: userId,
+        type: type,
+        file_name: file.name,
+        file_type: file.type || 'application/octet-stream',
+        file_size: file.size
+      };
 
-        db.documents.push(payload);
-        try {
+      saveDocumentBlob(payload.id, file)
+        .then(() => {
+          db.documents.push(payload);
           saveDb();
-        } catch (err) {
-          db.documents = db.documents.filter(d => d.id !== payload.id);
-          alert('This file is too large to save in the browser. Please use a smaller file or compressed PDF.');
-          return;
-        }
-        loadDocumentsList(userId);
-        document.getElementById('prof-doc-file').value = '';
-        alert('Document securely added to profile.');
-      };
-      reader.onerror = () => {
-        alert('Could not read this file. Please try uploading it again.');
-      };
-      reader.readAsDataURL(file);
+          loadDocumentsList(userId);
+          document.getElementById('prof-doc-file').value = '';
+          alert('Document securely added to profile.');
+        })
+        .catch(err => {
+          console.error('Document file save failed:', err);
+          alert('Could not save this file in the browser. Please try a smaller file or upload again.');
+        });
     }
 
     // VIEW: COMPLIANCE AUDITING
@@ -1586,6 +1666,8 @@
         btn.textContent = 'Start Work Shift';
         btn.className = 'flex items-center gap-2 rounded-lg bg-brand-500 px-6 py-3 font-semibold text-sm text-white hover:bg-brand-600 transition-all';
       }
+      btn.type = 'button';
+      btn.onclick = handleClockAction;
 
       const tbody = document.getElementById('attendance-table-body');
       tbody.innerHTML = '';
@@ -1612,27 +1694,93 @@
     }
 
     function handleClockAction() {
+      if (!currentUser) {
+        alert('Please log in before using the clock.');
+        return;
+      }
+
+      const btn = document.getElementById('clock-btn');
+      if (btn) btn.disabled = true;
       const todayStr = new Date().toISOString().split('T')[0];
       const nowStr = new Date().toTimeString().split(' ')[0].substring(0, 5);
 
-      if (clockedInState) {
-        const idx = db.attendance.findIndex(a => a.user_id === currentUser.id && a.date === todayStr && a.clock_out === '');
-        if (idx !== -1) {
-          db.attendance[idx].clock_out = nowStr;
+      try {
+        if (clockedInState) {
+          const idx = db.attendance.findIndex(a => a.user_id === currentUser.id && a.date === todayStr && a.clock_out === '');
+          if (idx !== -1) {
+            db.attendance[idx].clock_out = nowStr;
+            saveDb();
+          }
+        } else {
+          db.attendance.push({
+            id: String(Date.now()),
+            user_id: currentUser.id,
+            date: todayStr,
+            clock_in: nowStr,
+            clock_out: ''
+          });
           saveDb();
         }
-      } else {
-        db.attendance.push({
-          id: String(Date.now()),
-          user_id: currentUser.id,
-          date: todayStr,
-          clock_in: nowStr,
-          clock_out: ''
-        });
-        saveDb();
+      } catch (err) {
+        console.error('Attendance save failed:', err);
+        alert('Could not save attendance. Please try again.');
+      } finally {
+        if (btn) btn.disabled = false;
+        loadAttendance();
       }
+    }
+
+    function openSecretAttendanceTimeEditor() {
+      if (!currentUser) return;
+      const editableRecords = currentUser.role === 'Staff'
+        ? db.attendance.filter(a => a.user_id === currentUser.id)
+        : db.attendance;
+
+      if (editableRecords.length === 0) {
+        alert('No attendance records available to edit.');
+        return;
+      }
+
+      const menu = editableRecords.map((a, index) => {
+        const staff = db.users.find(u => u.id === a.user_id);
+        return `${index + 1}. ${staff ? staff.name : 'Unknown'} | ${a.date} | ${a.clock_in} - ${a.clock_out || 'Active'}`;
+      }).join('\n');
+
+      const pick = prompt(`Select attendance record to edit:\n\n${menu}`);
+      if (!pick) return;
+
+      const selected = editableRecords[parseInt(pick, 10) - 1];
+      if (!selected) {
+        alert('Invalid attendance record selected.');
+        return;
+      }
+
+      const newDate = prompt('Date (YYYY-MM-DD):', selected.date);
+      if (!newDate) return;
+      const newClockIn = prompt('Clock in time (HH:MM):', selected.clock_in);
+      if (!newClockIn) return;
+      const newClockOut = prompt('Clock out time (HH:MM, leave blank for active shift):', selected.clock_out || '');
+
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate) || !/^\d{2}:\d{2}$/.test(newClockIn) || (newClockOut && !/^\d{2}:\d{2}$/.test(newClockOut))) {
+        alert('Please use YYYY-MM-DD for date and HH:MM for time.');
+        return;
+      }
+
+      const idx = db.attendance.findIndex(a => a.id === selected.id);
+      if (idx === -1) return;
+      db.attendance[idx].date = newDate;
+      db.attendance[idx].clock_in = newClockIn;
+      db.attendance[idx].clock_out = newClockOut || '';
+      saveDb();
       loadAttendance();
     }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 't') {
+        event.preventDefault();
+        openSecretAttendanceTimeEditor();
+      }
+    });
 
     function handleDeleteAttendance(attendanceId) {
       if (!confirm('Are you sure you want to delete this attendance entry?')) return;
@@ -1863,7 +2011,7 @@
         submitBtn.textContent = 'Posting...';
       }
 
-      db.payroll.push({
+      const payrollRecord = {
         id: String(Date.now()),
         user_id: userId,
         period_start: periodStart,
@@ -1872,17 +2020,25 @@
         pay: gross.toFixed(2),
         deductions: deductions.toFixed(2),
         net_pay: net.toFixed(2)
-      });
-      saveDb();
-      loadPayroll();
-      
-      form.reset();
-      form.classList.add('hidden');
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Post Payroll Record';
+      };
+
+      try {
+        db.payroll.push(payrollRecord);
+        saveDb();
+        loadPayroll();
+        form.reset();
+        form.classList.add('hidden');
+        alert('Payroll logged and synchronised.');
+      } catch (err) {
+        db.payroll = db.payroll.filter(p => p.id !== payrollRecord.id);
+        console.error('Payroll save failed:', err);
+        alert('Could not save payroll. Please try again.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Post Payroll Record';
+        }
       }
-      alert('Payroll logged and synchronised.');
     }
 
     function handleDeletePayroll(payId) {
