@@ -170,40 +170,58 @@
 
         <!-- STATS CARDS -->
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          <button type="button" onclick="showDashboardDrilldown('staff')" class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 text-left hover:border-indigo-400/60 hover:bg-slate-900 transition-all">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Total Staff</span>
               <i data-lucide="users" class="h-5 w-5 text-indigo-400"></i>
             </div>
             <p id="stat-total-employees" class="mt-2 text-3xl font-bold">0</p>
-          </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          </button>
+          <button type="button" onclick="showDashboardDrilldown('attendance')" class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 text-left hover:border-emerald-400/60 hover:bg-slate-900 transition-all">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Clocked In Today</span>
               <i data-lucide="clock" class="h-5 w-5 text-emerald-400"></i>
             </div>
             <p id="stat-today-attendance" class="mt-2 text-3xl font-bold">0</p>
-          </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          </button>
+          <button type="button" onclick="showDashboardDrilldown('visas')" class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 text-left hover:border-amber-400/60 hover:bg-slate-900 transition-all">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Expiring Visas</span>
               <i data-lucide="alert-triangle" class="h-5 w-5 text-amber-500 animate-pulse"></i>
             </div>
             <p id="stat-visa-expiries" class="mt-2 text-3xl font-bold text-amber-500">0</p>
-          </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          </button>
+          <button type="button" onclick="showDashboardDrilldown('leave')" class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 text-left hover:border-cyan-400/60 hover:bg-slate-900 transition-all">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Open Leave</span>
               <i data-lucide="file-clock" class="h-5 w-5 text-cyan-400"></i>
             </div>
             <p id="stat-upcoming-leave" class="mt-2 text-3xl font-bold">0</p>
-          </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          </button>
+          <button type="button" onclick="showDashboardDrilldown('missingDocs')" class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 text-left hover:border-red-400/60 hover:bg-slate-900 transition-all">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Missing RTW Docs</span>
               <i data-lucide="shield-alert" class="h-5 w-5 text-red-500"></i>
             </div>
             <p id="stat-missing-docs" class="mt-2 text-3xl font-bold text-red-500">0</p>
+          </button>
+        </div>
+
+        <div id="dashboard-drilldown-panel" class="hidden rounded-xl border border-slate-800 bg-slate-900/30 p-5 space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <h2 id="dashboard-drilldown-title" class="text-lg font-semibold text-white font-serif">Details</h2>
+              <p id="dashboard-drilldown-summary" class="text-xs text-slate-500 mt-1">Click a dashboard number to inspect the matching people.</p>
+            </div>
+            <button type="button" onclick="closeDashboardDrilldown()" class="rounded-lg border border-slate-800 p-2 text-slate-400 hover:text-white hover:border-slate-600">
+              <i data-lucide="x" class="h-4 w-4"></i>
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-300">
+              <thead id="dashboard-drilldown-head" class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400"></thead>
+              <tbody id="dashboard-drilldown-body" class="divide-y divide-slate-800"></tbody>
+            </table>
           </div>
         </div>
 
@@ -514,6 +532,7 @@
                     <th class="p-3">Date</th>
                     <th class="p-3">Clock In</th>
                     <th class="p-3">Clock Out</th>
+                    <th class="p-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="attendance-table-body" class="divide-y divide-slate-800">
@@ -646,7 +665,7 @@
             <p class="text-sm text-slate-400">Process and review operational monthly staff salaries</p>
           </div>
           <!-- Manager controls -->
-          <button id="add-payroll-btn" onclick="toggleForm('add-payroll-form')" class="rounded-lg bg-brand-500 px-4 py-2.5 text-xs font-semibold text-white hover:bg-brand-600 transition-all">
+          <button id="add-payroll-btn" type="button" onclick="toggleForm('add-payroll-form')" class="rounded-lg bg-brand-500 px-4 py-2.5 text-xs font-semibold text-white hover:bg-brand-600 transition-all">
             Process Payroll Log
           </button>
         </div>
@@ -678,7 +697,7 @@
               <input id="pay-deductions" required type="number" step="0.01" value="0.00" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
             </div>
           </div>
-          <button type="submit" class="rounded bg-brand-500 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-600">
+          <button id="post-payroll-btn" type="submit" class="rounded bg-brand-500 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-600">
             Post Payroll Record
           </button>
         </form>
@@ -1102,26 +1121,34 @@
     // ==========================================
 
     // VIEW: DASHBOARD
+    function getExpiringVisaUsers() {
+      return db.users.filter(emp => {
+        if (!emp.visa_expiry_date) return false;
+        const diff = new Date(emp.visa_expiry_date) - new Date();
+        return diff > 0 && diff <= 90 * 24 * 60 * 60 * 1000;
+      });
+    }
+
+    function getMissingRtwUsers() {
+      return db.users.filter(emp => !emp.share_code && emp.nationality !== 'British' && emp.status !== 'Vacant');
+    }
+
     function loadDashboard() {
       const activeStaff = db.users.filter(u => u.status !== 'Vacant' && u.status !== 'Terminated');
       document.getElementById('stat-total-employees').textContent = activeStaff.length;
 
       const todayStr = new Date().toISOString().split('T')[0];
-      const todayAttendance = db.attendance.filter(a => a.date === todayStr).length;
-      document.getElementById('stat-today-attendance').textContent = todayAttendance;
+      const todayAttendance = db.attendance.filter(a => a.date === todayStr);
+      document.getElementById('stat-today-attendance').textContent = todayAttendance.length;
 
-      const visaExpiries = db.users.filter(emp => {
-        if (!emp.visa_expiry_date) return false;
-        const diff = new Date(emp.visa_expiry_date) - new Date();
-        return diff > 0 && diff <= 90 * 24 * 60 * 60 * 1000;
-      }).length;
-      document.getElementById('stat-visa-expiries').textContent = visaExpiries;
+      const visaExpiries = getExpiringVisaUsers();
+      document.getElementById('stat-visa-expiries').textContent = visaExpiries.length;
 
-      const openLeave = db.leave.filter(l => l.status === 'Pending').length;
-      document.getElementById('stat-upcoming-leave').textContent = openLeave;
+      const openLeave = db.leave.filter(l => l.status === 'Pending');
+      document.getElementById('stat-upcoming-leave').textContent = openLeave.length;
 
-      const missingDocs = db.users.filter(emp => !emp.share_code && emp.nationality !== 'British' && emp.status !== 'Vacant').length;
-      document.getElementById('stat-missing-docs').textContent = missingDocs;
+      const missingDocs = getMissingRtwUsers();
+      document.getElementById('stat-missing-docs').textContent = missingDocs.length;
 
       const recentBody = document.getElementById('dashboard-recent-employees');
       recentBody.innerHTML = '';
@@ -1140,6 +1167,91 @@
           </tr>
         `;
       });
+    }
+
+    function closeDashboardDrilldown() {
+      document.getElementById('dashboard-drilldown-panel').classList.add('hidden');
+    }
+
+    function showDashboardDrilldown(type) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const panel = document.getElementById('dashboard-drilldown-panel');
+      const title = document.getElementById('dashboard-drilldown-title');
+      const summary = document.getElementById('dashboard-drilldown-summary');
+      const head = document.getElementById('dashboard-drilldown-head');
+      const body = document.getElementById('dashboard-drilldown-body');
+      let rows = [];
+
+      if (type === 'visas') {
+        title.textContent = 'Expiring Visa Profiles';
+        summary.textContent = 'Staff with visa expiry dates within the next 90 days.';
+        head.innerHTML = '<tr><th class="p-3">Name</th><th class="p-3">Visa Type</th><th class="p-3">Expiry Date</th><th class="p-3">Share Code</th></tr>';
+        rows = getExpiringVisaUsers().map(emp => `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-3 font-semibold text-white">${emp.name}</td>
+            <td class="p-3 text-slate-400">${emp.visa_type || 'N/A'}</td>
+            <td class="p-3 text-amber-400 font-semibold">${emp.visa_expiry_date}</td>
+            <td class="p-3 text-slate-400">${emp.share_code || 'Missing'}</td>
+          </tr>
+        `);
+      } else if (type === 'attendance') {
+        title.textContent = 'Clocked In Today';
+        summary.textContent = 'Attendance rows recorded for today.';
+        head.innerHTML = '<tr><th class="p-3">Name</th><th class="p-3">Clock In</th><th class="p-3">Clock Out</th></tr>';
+        rows = db.attendance.filter(a => a.date === todayStr).map(a => {
+          const staff = db.users.find(u => u.id === a.user_id);
+          return `
+            <tr class="hover:bg-slate-900/40">
+              <td class="p-3 font-semibold text-white">${staff ? staff.name : 'Unknown'}</td>
+              <td class="p-3 text-emerald-400 font-mono">${a.clock_in}</td>
+              <td class="p-3 text-slate-400 font-mono">${a.clock_out || 'Active Shift'}</td>
+            </tr>
+          `;
+        });
+      } else if (type === 'leave') {
+        title.textContent = 'Open Leave Requests';
+        summary.textContent = 'Pending leave requests waiting for review.';
+        head.innerHTML = '<tr><th class="p-3">Name</th><th class="p-3">Leave Type</th><th class="p-3">Dates</th><th class="p-3">Status</th></tr>';
+        rows = db.leave.filter(l => l.status === 'Pending').map(l => {
+          const staff = db.users.find(u => u.id === l.user_id);
+          return `
+            <tr class="hover:bg-slate-900/40">
+              <td class="p-3 font-semibold text-white">${staff ? staff.name : 'Staff Member'}</td>
+              <td class="p-3 text-slate-400">${l.type}</td>
+              <td class="p-3 text-slate-300">${l.start_date} to ${l.end_date}</td>
+              <td class="p-3 text-amber-400">${l.status}</td>
+            </tr>
+          `;
+        });
+      } else if (type === 'missingDocs') {
+        title.textContent = 'Missing Right-to-Work Docs';
+        summary.textContent = 'Non-British active staff without a saved share code.';
+        head.innerHTML = '<tr><th class="p-3">Name</th><th class="p-3">Nationality</th><th class="p-3">Visa Type</th><th class="p-3">Share Code</th></tr>';
+        rows = getMissingRtwUsers().map(emp => `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-3 font-semibold text-white">${emp.name}</td>
+            <td class="p-3 text-slate-400">${emp.nationality}</td>
+            <td class="p-3 text-slate-400">${emp.visa_type || 'N/A'}</td>
+            <td class="p-3 text-red-400 font-semibold">Missing</td>
+          </tr>
+        `);
+      } else {
+        title.textContent = 'Active Staff';
+        summary.textContent = 'Current staff excluding vacant and terminated profiles.';
+        head.innerHTML = '<tr><th class="p-3">Name</th><th class="p-3">Department</th><th class="p-3">Job Title</th><th class="p-3">Status</th></tr>';
+        rows = db.users.filter(u => u.status !== 'Vacant' && u.status !== 'Terminated').map(emp => `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-3 font-semibold text-white">${emp.name}</td>
+            <td class="p-3 text-slate-400">${emp.department}</td>
+            <td class="p-3 text-slate-400">${emp.job_title}</td>
+            <td class="p-3 text-emerald-400">${emp.status}</td>
+          </tr>
+        `);
+      }
+
+      body.innerHTML = rows.length ? rows.join('') : '<tr><td class="p-4 text-slate-500" colspan="4">No matching records found.</td></tr>';
+      panel.classList.remove('hidden');
+      lucide.createIcons();
     }
 
     // VIEW: EMPLOYEES DIRECTORY
@@ -1197,6 +1309,7 @@
       db.shifts = db.shifts.filter(s => s.user_id !== id);
       db.attendance = db.attendance.filter(a => a.user_id !== id);
       db.leave = db.leave.filter(l => l.user_id !== id);
+      db.payroll = db.payroll.filter(p => p.user_id !== id);
       saveDb();
       loadEmployees();
     }
@@ -1318,7 +1431,7 @@
                 <span class="text-[10px] text-slate-500">${d.file_name}</span>
               </div>
               <div class="flex items-center gap-3">
-                <a href="#" onclick="downloadSimulatedDoc('${d.file_name}')" class="text-xs text-brand-500 hover:underline">Download</a>
+                <a href="#" onclick="downloadStoredDoc(event, '${d.id}')" class="text-xs text-brand-500 hover:underline">Download</a>
                 ${currentUser.role !== 'Staff' ? `
                   <button onclick="handleDeleteDoc('${d.id}', '${userId}')" class="text-xs text-red-500 hover:text-red-400 hover:underline flex items-center gap-1">
                     <i data-lucide="trash-2" class="h-3.5 w-3.5"></i> Delete
@@ -1332,14 +1445,35 @@
       }
     }
 
-    // Simulated local safe browser download helper for files
-    function downloadSimulatedDoc(fileName) {
-      const content = `Simulated UK RTW Document Record: ${fileName}`;
-      const blob = new Blob([content], { type: 'text/plain' });
+    function base64ToBlob(dataUrl, fallbackType) {
+      const parts = dataUrl.split(',');
+      const header = parts[0] || '';
+      const base64 = parts[1] || '';
+      const mimeMatch = header.match(/data:(.*?);base64/);
+      const mimeType = mimeMatch ? mimeMatch[1] : fallbackType || 'application/octet-stream';
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return new Blob([bytes], { type: mimeType });
+    }
+
+    function downloadStoredDoc(event, docId) {
+      if (event) event.preventDefault();
+      const doc = db.documents.find(d => d.id === docId);
+      if (!doc) return;
+
+      if (!doc.file_data) {
+        alert('This record was saved before real file downloads were added. Please delete it and upload the original file again.');
+        return;
+      }
+
+      const blob = base64ToBlob(doc.file_data, doc.file_type);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = fileName.endsWith('.pdf') ? fileName : fileName + '.txt';
+      a.download = doc.file_name || 'document';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1377,16 +1511,34 @@
 
       if (!file) return;
 
-      db.documents.push({
-        id: String(Date.now()),
-        user_id: userId,
-        type: type,
-        file_name: file.name
-      });
-      saveDb();
-      loadDocumentsList(userId);
-      document.getElementById('prof-doc-file').value = '';
-      alert('Document securely added to profile.');
+      const reader = new FileReader();
+      reader.onload = () => {
+        const payload = {
+          id: String(Date.now()),
+          user_id: userId,
+          type: type,
+          file_name: file.name,
+          file_type: file.type || 'application/octet-stream',
+          file_size: file.size,
+          file_data: reader.result
+        };
+
+        db.documents.push(payload);
+        try {
+          saveDb();
+        } catch (err) {
+          db.documents = db.documents.filter(d => d.id !== payload.id);
+          alert('This file is too large to save in the browser. Please use a smaller file or compressed PDF.');
+          return;
+        }
+        loadDocumentsList(userId);
+        document.getElementById('prof-doc-file').value = '';
+        alert('Document securely added to profile.');
+      };
+      reader.onerror = () => {
+        alert('Could not read this file. Please try uploading it again.');
+      };
+      reader.readAsDataURL(file);
     }
 
     // VIEW: COMPLIANCE AUDITING
@@ -1439,15 +1591,24 @@
       tbody.innerHTML = '';
       db.attendance.forEach(a => {
         const staff = db.users.find(u => u.id === a.user_id);
+        const canDelete = currentUser.role !== 'Staff' || a.user_id === currentUser.id;
         tbody.innerHTML += `
           <tr class="hover:bg-slate-900/40">
             <td class="p-3 font-semibold text-white">${staff ? staff.name : 'Unknown'}</td>
             <td class="p-3 text-slate-400">${a.date}</td>
             <td class="p-3 text-emerald-400 font-mono">${a.clock_in}</td>
             <td class="p-3 text-slate-400 font-mono">${a.clock_out || 'Active Shift'}</td>
+            <td class="p-3 text-right">
+              ${canDelete ? `
+                <button onclick="handleDeleteAttendance('${a.id}')" class="inline-flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-400">
+                  <i data-lucide="trash-2" class="h-3.5 w-3.5"></i> Delete
+                </button>
+              ` : '-'}
+            </td>
           </tr>
         `;
       });
+      lucide.createIcons();
     }
 
     function handleClockAction() {
@@ -1473,6 +1634,14 @@
       loadAttendance();
     }
 
+    function handleDeleteAttendance(attendanceId) {
+      if (!confirm('Are you sure you want to delete this attendance entry?')) return;
+      db.attendance = db.attendance.filter(a => a.id !== attendanceId);
+      saveDb();
+      loadAttendance();
+      if (!document.getElementById('view-dashboard').classList.contains('hidden')) loadDashboard();
+    }
+
     // VIEW: SCHEDULING ROTA
     function loadScheduling() {
       const select = document.getElementById('shift-user-select');
@@ -1486,20 +1655,28 @@
       db.shifts.forEach(s => {
         const staff = db.users.find(u => u.id === s.user_id);
         container.innerHTML += `
-          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center">
+          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center gap-4">
             <div>
               <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Employee'}</p>
               <span class="text-[10px] text-slate-500">${s.date} | ${s.start_time} - ${s.end_time}</span>
             </div>
-            <div class="text-right">
+            <div class="flex items-center gap-3 text-right">
+              <div>
               <span class="rounded bg-slate-800 px-2 py-0.5 text-xs text-brand-500 border border-brand-500/10">
                 ${s.department}
               </span>
               <p class="text-[10px] text-slate-500 mt-1 italic">${s.notes || ''}</p>
+              </div>
+              ${currentUser.role !== 'Staff' ? `
+                <button onclick="handleDeleteShift('${s.id}')" class="rounded border border-red-500/20 p-2 text-red-500 hover:bg-red-500/10 hover:text-red-400" title="Delete shift">
+                  <i data-lucide="trash-2" class="h-4 w-4"></i>
+                </button>
+              ` : ''}
             </div>
           </div>
         `;
       });
+      lucide.createIcons();
     }
 
     function handleCreateShift(e) {
@@ -1521,6 +1698,13 @@
       alert('Shift assigned to rota.');
     }
 
+    function handleDeleteShift(shiftId) {
+      if (!confirm('Are you sure you want to delete this shift?')) return;
+      db.shifts = db.shifts.filter(s => s.id !== shiftId);
+      saveDb();
+      loadScheduling();
+    }
+
     // VIEW: LEAVE WORKFLOWS
     function loadLeave() {
       const container = document.getElementById('leaves-container');
@@ -1529,6 +1713,7 @@
       db.leave.forEach(l => {
         const staff = db.users.find(u => u.id === l.user_id);
         const canAction = l.status === 'Pending' && currentUser.role !== 'Staff';
+        const canDelete = currentUser.role !== 'Staff' || l.user_id === currentUser.id;
 
         container.innerHTML += `
           <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
@@ -1550,10 +1735,16 @@
                   l.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-800 text-slate-400'
                 }">${l.status}</span>
               `}
+              ${canDelete ? `
+                <button onclick="handleDeleteLeave('${l.id}')" class="rounded border border-red-500/20 p-1.5 text-red-500 hover:bg-red-500/10 hover:text-red-400" title="Delete leave request">
+                  <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
+                </button>
+              ` : ''}
             </div>
           </div>
         `;
       });
+      lucide.createIcons();
     }
 
     function handleRequestLeave(e) {
@@ -1587,6 +1778,14 @@
         saveDb();
         loadLeave();
       }
+    }
+
+    function handleDeleteLeave(leaveId) {
+      if (!confirm('Are you sure you want to delete this leave request?')) return;
+      db.leave = db.leave.filter(l => l.id !== leaveId);
+      saveDb();
+      loadLeave();
+      if (!document.getElementById('view-dashboard').classList.contains('hidden')) loadDashboard();
     }
 
     // VIEW: PAYROLL (FUNCTIONAL MANAGER SYSTEM) [1]
@@ -1626,22 +1825,49 @@
 
     function handleAddPayroll(e) {
       e.preventDefault();
+      const form = document.getElementById('add-payroll-form');
+      const submitBtn = document.getElementById('post-payroll-btn');
       const userId = document.getElementById('pay-user-select').value;
       const emp = db.users.find(u => u.id === userId);
-      if (!emp) return;
+      if (!emp) {
+        alert('Please select a valid employee before posting payroll.');
+        return;
+      }
 
-      const hours = parseFloat(document.getElementById('pay-hours').value) || 0;
+      const periodStart = document.getElementById('pay-start').value;
+      const periodEnd = document.getElementById('pay-end').value;
+      const hours = parseFloat(document.getElementById('pay-hours').value);
       const deductions = parseFloat(document.getElementById('pay-deductions').value) || 0;
+
+      if (!periodStart || !periodEnd) {
+        alert('Please enter the payroll start and end dates.');
+        return;
+      }
+
+      if (!Number.isFinite(hours) || hours <= 0) {
+        alert('Please enter valid hours worked before posting payroll.');
+        return;
+      }
+
+      if (deductions < 0) {
+        alert('Deductions cannot be below zero.');
+        return;
+      }
       
       // Calculate automatically from profile rates [1]
       const gross = hours * (parseFloat(emp.hourly_rate) || 0);
       const net = Math.max(0, gross - deductions);
 
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Posting...';
+      }
+
       db.payroll.push({
         id: String(Date.now()),
         user_id: userId,
-        period_start: document.getElementById('pay-start').value,
-        period_end: document.getElementById('pay-end').value,
+        period_start: periodStart,
+        period_end: periodEnd,
         hours_worked: hours,
         pay: gross.toFixed(2),
         deductions: deductions.toFixed(2),
@@ -1650,8 +1876,12 @@
       saveDb();
       loadPayroll();
       
-      document.getElementById('add-payroll-form').reset();
-      document.getElementById('add-payroll-form').classList.add('hidden');
+      form.reset();
+      form.classList.add('hidden');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Post Payroll Record';
+      }
       alert('Payroll logged and synchronised.');
     }
 
