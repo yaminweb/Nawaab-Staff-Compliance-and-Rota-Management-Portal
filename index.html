@@ -22,7 +22,7 @@
             brand: {
               50: '#fef2f2',
               100: '#fee2e2',
-              500: '#b91c1c', // Nawaab Crimson Red
+              500: '#b91c1c', // Nawaab Crimson Red (matches turban brand color)
               600: '#991b1b',
               700: '#7f1d1d',
               800: '#450a0a'
@@ -44,20 +44,25 @@
   <!-- ========================================== -->
   <!-- 1. SECURED PRODUCTION LOGIN VIEW -->
   <!-- ========================================== -->
-  <div id="auth-view" class="min-h-screen flex items-center justify-center bg-slate-950 px-4 animate-fade-in">
+  <div id="auth-view" class="min-h-screen flex items-center justify-center bg-slate-950 px-4">
     <div class="w-full max-w-md space-y-8 rounded-2xl border border-slate-800 bg-slate-900/50 p-8 backdrop-blur-md">
       
-      <!-- Vector Brand Header (Loads natively with zero dependency issues) -->
-      <div class="text-center space-y-4 flex flex-col items-center justify-center">
-        <svg class="h-24 w-auto text-brand-500 animate-fade-in" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M100 20C75 20 60 35 60 55C60 62 65 68 72 70C75 62 82 55 90 52C92 48 95 45 100 45C108 45 115 52 115 60C115 68 108 75 100 75C95 75 92 72 90 68C82 72 75 80 72 90C85 95 100 95 115 90C125 80 135 68 135 55C135 35 120 20 100 20Z" fill="#b91c1c"/>
-          <path d="M100 10C100 10 108 18 105 25C102 32 95 35 95 35C95 35 105 32 110 25C115 18 100 10 100 10Z" fill="#991b1b"/>
-          <path d="M90 52C88 55 86 58 85 62C84 66 84 70 85 74C86 78 88 82 91 85C92 86 91 88 89 89C86 91 82 92 78 92C72 92 68 88 66 82C64 76 65 70 67 65C69 60 72 56 76 54C80 52 85 51 90 52Z" fill="#0f1322" stroke="#1d233a" stroke-width="2"/>
-          <path d="M72 90C70 94 68 98 65 100C60 103 55 103 50 101C46 99 44 95 44 90C44 82 48 75 54 70C60 65 67 65 72 70" fill="#000000"/>
-        </svg>
-        <div class="text-center">
-          <h2 class="text-3xl font-serif font-extrabold tracking-tight text-white uppercase">NAWAAB</h2>
-          <p class="text-[10px] tracking-widest text-brand-500 uppercase font-semibold">AUTHENTIC INDIAN RESTAURANT</p>
+      <!-- Brand Header (Falls back to high fidelity SVG if image missing) -->
+      <div class="text-center space-y-4">
+        <div class="flex flex-col items-center justify-center">
+          <img src="logo.png" id="login-image-logo" alt="Nawaab Logo" class="h-28 w-auto object-contain mx-auto transition-transform duration-200 hover:scale-105" onerror="showLoginSvgFallback()">
+          
+          <!-- Fallback Inline SVG Logo -->
+          <div id="login-svg-fallback" class="hidden flex flex-col items-center">
+            <svg class="h-24 w-auto text-brand-500" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M100 20C75 20 60 35 60 55C60 62 65 68 72 70C75 62 82 55 90 52C92 48 95 45 100 45C108 45 115 52 115 60C115 68 108 75 100 75C95 75 92 72 90 68C82 72 75 80 72 90C85 95 100 95 115 90C125 80 135 68 135 55C135 35 120 20 100 20Z" fill="#b91c1c"/>
+              <path d="M100 10C100 10 108 18 105 25C102 32 95 35 95 35C95 35 105 32 110 25C115 18 100 10 100 10Z" fill="#991b1b"/>
+              <path d="M90 52C88 55 86 58 85 62C84 66 84 70 85 74C86 78 88 82 91 85C92 86 91 88 89 89C86 91 82 92 78 92C72 92 68 88 66 82C64 76 65 70 67 65C69 60 72 56 76 54C80 52 85 51 90 52Z" fill="#0f1322" stroke="#1d233a" stroke-width="2"/>
+              <path d="M72 90C70 94 68 98 65 100C60 103 55 103 50 101C46 99 44 95 44 90C44 82 48 75 54 70C60 65 67 65 72 70" fill="#000000"/>
+            </svg>
+            <h2 class="text-3xl font-serif font-extrabold tracking-tight text-white uppercase mt-2">NAWAAB</h2>
+            <p class="text-[10px] tracking-widest text-brand-500 uppercase font-semibold">AUTHENTIC INDIAN RESTAURANT</p>
+          </div>
         </div>
         <span class="inline-block rounded-full bg-brand-500/10 px-3.5 py-1 text-xs font-semibold text-brand-100 border border-brand-500/20">
           UK HOME OFFICE RTW PORTAL
@@ -86,74 +91,47 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- MOBILE TOP BAR HEADER -->
-  <!-- ========================================== -->
-  <header id="mobile-header" class="hidden md:hidden bg-slate-950 border-b border-slate-800 px-4 py-3.5 flex items-center justify-between z-40">
-    <div class="flex items-center gap-2">
-      <div class="h-8 w-8 rounded bg-brand-500 flex items-center justify-center font-bold text-white shadow-lg">N</div>
-      <span class="text-sm font-serif font-bold text-white uppercase tracking-widest">NAWAAB</span>
-    </div>
-    <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white focus:outline-none">
-      <i data-lucide="menu" class="h-6 w-6"></i>
-    </button>
-  </header>
-
-  <!-- ========================================== -->
-  <!-- MOBILE DRAWER MENU OVERLAY -->
-  <!-- ========================================== -->
-  <div id="mobile-menu-drawer" class="hidden fixed inset-0 z-50 flex">
-    <div onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
-    <div class="relative w-64 max-w-xs bg-slate-950 border-r border-slate-800 p-6 flex flex-col justify-between h-full">
-      <div class="space-y-6">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-          <div class="flex items-center gap-2">
-            <div class="h-8 w-8 rounded bg-brand-500 flex items-center justify-center font-bold text-white shadow-lg">N</div>
-            <span class="text-xs font-serif font-bold text-white uppercase tracking-widest">NAWAAB</span>
-          </div>
-          <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white">
-            <i data-lucide="x" class="h-5 w-5"></i>
-          </button>
-        </div>
-        <nav id="mobile-nav" class="space-y-1">
-          <!-- Populated dynamically based on permissions -->
-        </nav>
-      </div>
-      <div class="border-t border-slate-800 pt-4 mt-6">
-        <div class="mb-4">
-          <p id="mobile-user-name" class="text-xs font-semibold text-white"></p>
-          <span id="mobile-user-role" class="text-[10px] text-brand-500 uppercase tracking-widest font-bold"></span>
-        </div>
-        <button onclick="logout(); toggleMobileMenu();" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-red-400 hover:bg-red-500/10 transition-all font-medium">
-          <i data-lucide="log-out" class="h-4 w-4"></i> Sign Out Session
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- 3. MAIN WORKSPACE APP INTERFACE -->
+  <!-- 2. MAIN APPLICATION INTERFACE -->
   <!-- ========================================== -->
   <div id="workspace" class="hidden min-h-screen flex flex-col md:flex-row overflow-hidden">
     
-    <!-- DESKTOP SIDEBAR -->
+    <!-- SIDEBAR NAVIGATION -->
     <aside class="w-full md:w-64 border-r border-slate-800 bg-slate-950 p-6 flex flex-col justify-between hidden md:flex">
       <div class="space-y-6">
-        <!-- Sidebar Brand Header Area (Vector only ensures perfect loading without png files) -->
-        <div class="flex flex-col items-center space-y-2 border-b border-slate-800 pb-6 text-center">
-          <svg class="h-16 w-auto text-brand-500" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M100 20C75 20 60 35 60 55C60 62 65 68 72 70C75 62 82 55 90 52C92 48 95 45 100 45C108 45 115 52 115 60C115 68 108 75 100 75C95 75 92 72 90 68C82 72 75 80 72 90C85 95 100 95 115 90C125 80 135 68 135 55C135 35 120 20 100 20Z" fill="#b91c1c"/>
-            <path d="M100 10C100 10 108 18 105 25C102 32 95 35 95 35C95 35 105 32 110 25C115 18 100 10 100 10Z" fill="#991b1b"/>
-            <path d="M90 52C88 55 86 58 85 62C84 66 84 70 85 74C86 78 88 82 91 85C92 86 91 88 89 89C86 91 82 92 78 92C72 92 68 88 66 82C64 76 65 70 67 65C69 60 72 56 76 54C80 52 85 51 90 52Z" fill="#0f1322" stroke="#1d233a" stroke-width="2"/>
-            <path d="M72 90C70 94 68 98 65 100C60 103 55 103 50 101C46 99 44 95 44 90C44 82 48 75 54 70C60 65 67 65 72 70" fill="#000000"/>
-          </svg>
-          <div class="flex flex-col items-center">
-            <h1 class="text-base font-serif font-bold text-white tracking-widest uppercase">NAWAAB</h1>
+        <!-- Sidebar Brand Header Area -->
+        <div class="flex flex-col items-center space-y-2 border-b border-slate-800 pb-6">
+          <img src="logo.png" id="sidebar-image-logo" alt="Nawaab Logo" class="h-20 w-auto object-contain mx-auto" onerror="showSidebarSvgFallback()">
+          <div id="sidebar-svg-fallback" class="hidden flex flex-col items-center text-center">
+            <h1 class="text-lg font-serif font-bold text-white tracking-widest uppercase">NAWAAB</h1>
             <span class="text-[9px] tracking-widest text-brand-500 uppercase font-bold">AUTHENTIC INDIAN</span>
           </div>
         </div>
 
-        <nav id="desktop-nav" class="space-y-1">
-          <!-- Injected dynamically by role permissions -->
+        <nav class="space-y-1">
+          <button onclick="navigate('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="layout-dashboard" class="h-4 w-4"></i> Dashboard
+          </button>
+          <button onclick="navigate('employees')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="users" class="h-4 w-4"></i> Employees
+          </button>
+          <button onclick="navigate('compliance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="shield-check" class="h-4 w-4"></i> Compliance
+          </button>
+          <button onclick="navigate('attendance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="clock" class="h-4 w-4"></i> Attendance
+          </button>
+          <button onclick="navigate('scheduling')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="calendar" class="h-4 w-4"></i> Rota Schedule
+          </button>
+          <button onclick="navigate('leave')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="file-signature" class="h-4 w-4"></i> Leave Requests
+          </button>
+          <button onclick="navigate('payroll')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="landmark" class="h-4 w-4"></i> Payroll Records
+          </button>
+          <button onclick="navigate('reports')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i data-lucide="file-text" class="h-4 w-4"></i> Report Center
+          </button>
         </nav>
       </div>
 
@@ -192,35 +170,35 @@
 
         <!-- STATS CARDS -->
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Total Staff</span>
               <i data-lucide="users" class="h-5 w-5 text-indigo-400"></i>
             </div>
             <p id="stat-total-employees" class="mt-2 text-3xl font-bold">0</p>
           </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Clocked In Today</span>
               <i data-lucide="clock" class="h-5 w-5 text-emerald-400"></i>
             </div>
             <p id="stat-today-attendance" class="mt-2 text-3xl font-bold">0</p>
           </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Expiring Visas</span>
               <i data-lucide="alert-triangle" class="h-5 w-5 text-amber-500 animate-pulse"></i>
             </div>
             <p id="stat-visa-expiries" class="mt-2 text-3xl font-bold text-amber-500">0</p>
           </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Open Leave</span>
               <i data-lucide="file-clock" class="h-5 w-5 text-cyan-400"></i>
             </div>
             <p id="stat-upcoming-leave" class="mt-2 text-3xl font-bold">0</p>
           </div>
-          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 animate-fade-in">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
             <div class="flex justify-between items-center text-slate-400">
               <span class="text-xs font-semibold uppercase">Missing RTW Docs</span>
               <i data-lucide="shield-alert" class="h-5 w-5 text-red-500"></i>
@@ -231,7 +209,7 @@
 
         <div class="grid gap-6 lg:grid-cols-3">
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
-            <h2 id="dashboard-recent-title" class="text-lg font-semibold text-white font-serif">Recent Team Additions</h2>
+            <h2 class="text-lg font-semibold text-white font-serif font-serif">Staff Directory Overview</h2>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm text-slate-300">
                 <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
@@ -294,7 +272,7 @@
 
         <!-- ADD EMPLOYEE FORM -->
         <form id="add-employee-form" class="hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4" onsubmit="handleAddEmployee(event)">
-          <h2 class="text-lg font-semibold text-white font-serif">Personal & Employment Information</h2>
+          <h2 class="text-lg font-semibold text-white">Personal & Employment Information</h2>
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label class="block text-xs font-semibold text-slate-400">Full Name</label>
@@ -424,27 +402,21 @@
               </div>
             </div>
 
-            <!-- Prominent custom category creation zone [1] -->
-            <div class="rounded-lg bg-slate-900 p-4 border border-slate-800/80 space-y-2">
-              <h4 class="text-[10px] font-bold text-brand-500 uppercase tracking-widest">Add Custom Category</h4>
-              <div class="flex gap-2">
-                <input id="new-custom-category" type="text" placeholder="e.g. Food Safety L2" class="block w-full rounded border border-slate-800 bg-slate-950 p-1.5 text-xs text-slate-100 focus:outline-none">
-                <button type="button" onclick="handleAddCategoryPrompt()" class="bg-brand-500 hover:bg-brand-600 px-3 py-1.5 rounded text-white text-xs font-semibold whitespace-nowrap shadow-lg">Create Category</button>
-              </div>
-            </div>
-
             <!-- Upload simulation with custom categories -->
             <form id="prof-upload-form" onsubmit="handleUploadDoc(event)" class="rounded-lg bg-slate-950 p-4 border border-slate-800 space-y-4">
               <h3 class="text-xs font-semibold uppercase text-slate-400">Upload New Record</h3>
               <div class="grid gap-4 grid-cols-2">
                 <div>
-                  <label class="block text-[10px] font-semibold text-slate-400">Category Selection</label>
-                  <select id="prof-doc-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-900 p-1.5 text-xs text-slate-100 focus:outline-none">
-                    <!-- Categories generated dynamically -->
-                  </select>
+                  <label class="block text-[10px] font-semibold text-slate-400">Category</label>
+                  <div class="flex gap-2">
+                    <select id="prof-doc-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-900 p-1.5 text-xs text-slate-100 font-medium focus:outline-none">
+                      <!-- Categories generated dynamically -->
+                    </select>
+                    <button type="button" onclick="handleAddCategoryPrompt()" class="mt-1 bg-brand-500 hover:bg-brand-600 px-2.5 rounded text-white text-xs font-bold shadow-lg" title="Add Custom Category">+</button>
+                  </div>
                 </div>
                 <div>
-                  <label class="block text-[10px] font-semibold text-slate-400">Select Document</label>
+                  <label class="block text-[10px] font-semibold text-slate-400">Mock Select Document</label>
                   <input id="prof-doc-file" required type="file" class="mt-1 block w-full text-xs text-slate-400">
                 </div>
               </div>
@@ -510,47 +482,13 @@
       </section>
 
       <!-- ========================================== -->
-      <!-- VIEW: ATTENDANCE (FUNCTIONAL TERMINAL WITH DELETE OPTION) -->
+      <!-- VIEW: ATTENDANCE -->
       <!-- ========================================== -->
       <section id="view-attendance" class="view-panel hidden space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-6 gap-4">
-          <div>
-            <h1 class="text-2xl font-bold text-white font-serif">Work Clock Terminal</h1>
-            <p class="text-sm text-slate-400">Log daily work hours and check shift timings</p>
-          </div>
-          <!-- Manual attendance button for managers -->
-          <button id="add-attendance-btn" onclick="toggleForm('add-attendance-form')" class="rounded-lg bg-brand-500 px-4 py-2.5 text-xs font-semibold text-white hover:bg-brand-600 transition-all hidden animate-fade-in">
-            Add Manual Attendance
-          </button>
+        <div>
+          <h1 class="text-2xl font-bold text-white font-serif font-serif">Work Clock Terminal</h1>
+          <p class="text-sm text-slate-400">Log daily work hours and check shift timings</p>
         </div>
-
-        <!-- MANUAL ATTENDANCE FORM (DIRECTORS & MANAGERS ONLY) -->
-        <form id="add-attendance-form" class="hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4 animate-fade-in" onsubmit="handleLogManualAttendance(event)">
-          <h2 class="text-lg font-semibold text-white font-serif">Add Manual Attendance Log</h2>
-          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-400">Select Employee</label>
-              <select id="att-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
-                <!-- Populated dynamically -->
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400">Date</label>
-              <input id="att-manual-date" required type="date" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400">Clock In Time</label>
-              <input id="att-manual-in" required type="time" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400">Clock Out Time</label>
-              <input id="att-manual-out" required type="time" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
-            </div>
-          </div>
-          <button type="submit" class="rounded bg-brand-500 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-600">
-            Record Manual Log
-          </button>
-        </form>
 
         <div class="grid gap-6 lg:grid-cols-3">
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 flex flex-col items-center justify-center space-y-4">
@@ -567,7 +505,7 @@
           </div>
 
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-semibold text-white font-serif bg-transparent">Daily Attendance Log</h2>
+            <h2 class="text-lg font-semibold text-white font-serif font-serif">Daily Attendance Log</h2>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm text-slate-300">
                 <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
@@ -576,7 +514,6 @@
                     <th class="p-3">Date</th>
                     <th class="p-3">Clock In</th>
                     <th class="p-3">Clock Out</th>
-                    <th class="p-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="attendance-table-body" class="divide-y divide-slate-800">
@@ -604,7 +541,7 @@
             <form onsubmit="handleCreateShift(event)" class="space-y-4">
               <div>
                 <label class="block text-xs font-semibold text-slate-400">Employee</label>
-                <select id="shift-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 font-medium">
+                <select id="shift-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
                   <!-- Dynamic list of employees -->
                 </select>
               </div>
@@ -664,7 +601,7 @@
             <form onsubmit="handleRequestLeave(event)" class="space-y-4">
               <div>
                 <label class="block text-xs font-semibold text-slate-400">Leave Category</label>
-                <select id="leave-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 font-medium">
+                <select id="leave-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
                   <option value="Annual Leave">Annual Leave</option>
                   <option value="Sick Leave">Sick Leave</option>
                   <option value="Emergency Leave">Emergency Leave</option>
@@ -716,11 +653,11 @@
 
         <!-- GENERATE PAYROLL LOG FORM -->
         <form id="add-payroll-form" class="hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4" onsubmit="handleAddPayroll(event)">
-          <h2 class="text-lg font-semibold text-white font-serif">Generate Payroll Log</h2>
+          <h2 class="text-lg font-semibold text-white">Generate Payroll Log</h2>
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label class="block text-xs font-semibold text-slate-400">Select Employee</label>
-              <select id="pay-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100 focus:outline-none">
+              <select id="pay-user-select" class="mt-1 block w-full rounded border border-slate-800 bg-slate-950 p-2 text-sm text-slate-100">
                 <!-- Dynamically loaded staff -->
               </select>
             </div>
@@ -914,23 +851,16 @@
     let db = {};
     let currentUser = null;
     let firebaseDb = null;
-    let mobileMenuState = false;
 
-    // MOBILE NAVIGATION DRAWER HELPERS [1]
-    function toggleMobileMenu() {
-      const drawer = document.getElementById('mobile-menu-drawer');
-      mobileMenuState = !mobileMenuState;
-      if (mobileMenuState) {
-        drawer.classList.remove('hidden');
-      } else {
-        drawer.classList.add('hidden');
-      }
+    // DUAL LOGO RENDER ENGINE (Checks if local file logo.png is loaded, falls back to SVG)
+    function showLoginSvgFallback() {
+      document.getElementById('login-image-logo').classList.add('hidden');
+      document.getElementById('login-svg-fallback').classList.remove('hidden');
     }
 
-    function closeMobileMenuIfNeeded() {
-      if (mobileMenuState) {
-        toggleMobileMenu();
-      }
+    function showSidebarSvgFallback() {
+      document.getElementById('sidebar-image-logo').classList.add('hidden');
+      document.getElementById('sidebar-svg-fallback').classList.remove('hidden');
     }
 
     // Seed default Nawaab datasets with defensive initialization to secure older DB updates
@@ -1044,8 +974,8 @@
         const dot = document.getElementById('firebase-dot');
         const txt = document.getElementById('firebase-txt');
         
-        if (dot) dot.className = "h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse";
-        if (txt) txt.textContent = "Cloud Sync Active";
+        dot.className = "h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse";
+        txt.textContent = "Cloud Sync Active";
 
         let isFirstLoad = true;
         // Realtime data listener
@@ -1067,13 +997,700 @@
         }, (error) => {
           // If read/write permissions are rejected [1]
           console.error("Firebase Read Failed (Rules Lock):", error);
-          if (dot) dot.className = "h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse";
-          if (txt) txt.textContent = "Sync Error: Locked Rules";
-          if (badge) {
-            badge.className = "mb-3 text-[10px] rounded px-2.5 py-2 flex flex-col gap-1.5 bg-red-950/30 border border-red-500/20";
-            badge.innerHTML = `
-              <div class="flex items-center gap-1.5">
-                <span class="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                <span class="text-red-400 font-bold">Cloud Sync Blocked</span>
+          dot.className = "h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse";
+          txt.textContent = "Sync Error: Locked Rules";
+          badge.className = "mb-3 text-[10px] rounded px-2.5 py-2 flex flex-col gap-1.5 bg-red-950/30 border border-red-500/20";
+          badge.innerHTML = `
+            <div class="flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"></span>
+              <span class="text-red-400 font-bold">Cloud Sync Blocked</span>
+            </div>
+            <p class="text-[9px] text-red-300 mt-1 leading-relaxed">
+              Your Firebase database rules are locked. 
+              <br><span class="underline font-bold">To fix this:</span> Go to Firebase Console -> Realtime Database -> Rules. Change <code class="bg-black/30 px-1 py-0.5 rounded">.read</code> and <code class="bg-black/30 px-1 py-0.5 rounded font-mono">.write</code> to <code class="text-emerald-400 font-mono font-bold">true</code>, then click Publish!
+            </p>
+          `;
+        });
+      } catch (err) {
+        console.error("Firebase Connection Error: ", err);
+      }
+    }
+
+    // Run-time bootstrap trigger
+    initDatabase();
+    connectFirebase();
+
+    // ==========================================
+    // 5. AUTHENTICATION & LOGIN CONTROLLER
+    // ==========================================
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+      const errorDiv = document.getElementById('login-error');
+
+      const user = db.users.find(u => u.email === email && u.password === pass);
+      if (user) {
+        currentUser = user;
+        sessionStorage.setItem('current_user', JSON.stringify(user));
+        errorDiv.classList.add('hidden');
+        initWorkspace();
+      } else {
+        errorDiv.textContent = 'Incorrect credentials';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      sessionStorage.removeItem('current_user');
+      document.getElementById('workspace').classList.add('hidden');
+      document.getElementById('auth-view').classList.remove('hidden');
+    }
+
+    function initWorkspace() {
+      document.getElementById('auth-view').classList.add('hidden');
+      document.getElementById('workspace').classList.remove('hidden');
+
+      document.getElementById('user-display-name').textContent = currentUser.name;
+      document.getElementById('user-display-role').textContent = currentUser.role;
+
+      // Restrict structural tasks from base-level staff roles
+      if (currentUser.role === 'Staff') {
+        document.getElementById('add-employee-btn').classList.add('hidden');
+        document.getElementById('assign-shift-panel').classList.add('hidden');
+        document.getElementById('prof-comp-btn').classList.add('hidden');
+        document.getElementById('prof-upload-form').classList.add('hidden');
+        document.getElementById('add-payroll-btn').classList.add('hidden');
+      } else {
+        document.getElementById('add-employee-btn').classList.remove('hidden');
+        document.getElementById('assign-shift-panel').classList.remove('hidden');
+        document.getElementById('prof-comp-btn').classList.remove('hidden');
+        document.getElementById('prof-upload-form').classList.remove('hidden');
+        document.getElementById('add-payroll-btn').classList.remove('hidden');
+      }
+
+      navigate('dashboard');
+    }
+
+    // ==========================================
+    // 6. ROUTER NAVIGATION
+    // ==========================================
+    function navigate(viewId) {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-brand-500/10', 'text-brand-500', 'border', 'border-brand-500/20'));
+
+      document.getElementById('view-' + viewId).classList.remove('hidden');
+      lucide.createIcons();
+
+      // UI update hooks
+      if (viewId === 'dashboard') loadDashboard();
+      if (viewId === 'employees') loadEmployees();
+      if (viewId === 'compliance') loadCompliance();
+      if (viewId === 'attendance') loadAttendance();
+      if (viewId === 'scheduling') loadScheduling();
+      if (viewId === 'leave') loadLeave();
+      if (viewId === 'payroll') loadPayroll();
+    }
+
+    function toggleForm(id) {
+      document.getElementById(id).classList.toggle('hidden');
+    }
+
+    // ==========================================
+    // 7. OPERATION FLOW PANELS
+    // ==========================================
+
+    // VIEW: DASHBOARD
+    function loadDashboard() {
+      const activeStaff = db.users.filter(u => u.status !== 'Vacant' && u.status !== 'Terminated');
+      document.getElementById('stat-total-employees').textContent = activeStaff.length;
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayAttendance = db.attendance.filter(a => a.date === todayStr).length;
+      document.getElementById('stat-today-attendance').textContent = todayAttendance;
+
+      const visaExpiries = db.users.filter(emp => {
+        if (!emp.visa_expiry_date) return false;
+        const diff = new Date(emp.visa_expiry_date) - new Date();
+        return diff > 0 && diff <= 90 * 24 * 60 * 60 * 1000;
+      }).length;
+      document.getElementById('stat-visa-expiries').textContent = visaExpiries;
+
+      const openLeave = db.leave.filter(l => l.status === 'Pending').length;
+      document.getElementById('stat-upcoming-leave').textContent = openLeave;
+
+      const missingDocs = db.users.filter(emp => !emp.share_code && emp.nationality !== 'British' && emp.status !== 'Vacant').length;
+      document.getElementById('stat-missing-docs').textContent = missingDocs;
+
+      const recentBody = document.getElementById('dashboard-recent-employees');
+      recentBody.innerHTML = '';
+      db.users.slice(0, 4).forEach(emp => {
+        recentBody.innerHTML += `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-3 font-semibold text-white">${emp.name}</td>
+            <td class="p-3 text-slate-400">${emp.department}</td>
+            <td class="p-3 text-slate-400">${emp.job_title}</td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                emp.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400' :
+                emp.status === 'Vacant' ? 'bg-slate-800 text-slate-400' : 'bg-red-500/10 text-red-400'
+              }">${emp.status}</span>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // VIEW: EMPLOYEES DIRECTORY
+    function loadEmployees() {
+      const tbody = document.getElementById('employees-table-body');
+      tbody.innerHTML = '';
+      db.users.forEach(emp => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-4 font-semibold text-brand-500">
+              <button onclick="viewProfile('${emp.id}')" class="hover:underline text-left">${emp.name}</button>
+            </td>
+            <td class="p-4 text-slate-400">${emp.department}</td>
+            <td class="p-4 text-slate-300">${emp.job_title}</td>
+            <td class="p-4 text-slate-300">£${parseFloat(emp.hourly_rate || 0).toFixed(2)}</td>
+            <td class="p-4 text-slate-400">${emp.nationality}</td>
+            <td class="p-4 text-right space-x-3">
+              <button onclick="viewProfile('${emp.id}')" class="text-xs text-indigo-400 hover:underline">Profile</button>
+              ${currentUser.role !== 'Staff' ? `<button onclick="openEditModal('${emp.id}')" class="text-xs text-emerald-400 hover:underline">Edit</button>` : ''}
+              ${currentUser.role !== 'Staff' && emp.id !== currentUser.id ? `<button onclick="deleteEmployee('${emp.id}')" class="text-xs text-red-400 hover:underline">Remove</button>` : ''}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function handleAddEmployee(e) {
+      e.preventDefault();
+      const newEmp = {
+        id: String(Date.now()),
+        name: document.getElementById('new-name').value,
+        email: document.getElementById('new-email').value,
+        phone: document.getElementById('new-phone').value,
+        nationality: document.getElementById('new-nationality').value,
+        role: document.getElementById('new-role').value,
+        department: document.getElementById('new-dept').value,
+        job_title: document.getElementById('new-title').value,
+        hourly_rate: parseFloat(document.getElementById('new-rate').value),
+        start_date: new Date().toISOString().split('T')[0],
+        status: 'Active',
+        password: 'password123'
+      };
+
+      db.users.push(newEmp);
+      saveDb();
+      document.getElementById('add-employee-form').reset();
+      document.getElementById('add-employee-form').classList.add('hidden');
+      loadEmployees();
+    }
+
+    function deleteEmployee(id) {
+      if (!confirm('Are you sure you want to delete this profile?')) return;
+      db.users = db.users.filter(u => u.id !== id);
+      db.documents = db.documents.filter(d => d.user_id !== id);
+      db.shifts = db.shifts.filter(s => s.user_id !== id);
+      db.attendance = db.attendance.filter(a => a.user_id !== id);
+      db.leave = db.leave.filter(l => l.user_id !== id);
+      saveDb();
+      loadEmployees();
+    }
+
+    // ==========================================
+    // 8. STAFF RECORD MODIFICATION (EDIT OPTION)
+    // ==========================================
+    function openEditModal(id) {
+      const emp = db.users.find(u => u.id === id);
+      if (!emp) return;
+
+      document.getElementById('edit-id').value = emp.id;
+      document.getElementById('edit-name').value = emp.name;
+      document.getElementById('edit-email').value = emp.email || '';
+      document.getElementById('edit-password').value = emp.password || '';
+      document.getElementById('edit-phone').value = emp.phone || '';
+      document.getElementById('edit-nationality').value = emp.nationality || '';
+      document.getElementById('edit-role').value = emp.role || 'Staff';
+      document.getElementById('edit-dept').value = emp.department || 'Kitchen';
+      document.getElementById('edit-title').value = emp.job_title || '';
+      document.getElementById('edit-rate').value = emp.hourly_rate || 0.00;
+      document.getElementById('edit-status').value = emp.status || 'Active';
+
+      document.getElementById('edit-employee-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeEditModal() {
+      document.getElementById('edit-employee-modal').classList.add('hidden');
+    }
+
+    function handleSaveEmployeeEdit(e) {
+      e.preventDefault();
+      const id = document.getElementById('edit-id').value;
+      const idx = db.users.findIndex(u => u.id === id);
+
+      if (idx !== -1) {
+        db.users[idx].name = document.getElementById('edit-name').value;
+        db.users[idx].email = document.getElementById('edit-email').value;
+        db.users[idx].password = document.getElementById('edit-password').value;
+        db.users[idx].phone = document.getElementById('edit-phone').value;
+        db.users[idx].nationality = document.getElementById('edit-nationality').value;
+        db.users[idx].role = document.getElementById('edit-role').value;
+        db.users[idx].department = document.getElementById('edit-dept').value;
+        db.users[idx].job_title = document.getElementById('edit-title').value;
+        db.users[idx].hourly_rate = parseFloat(document.getElementById('edit-rate').value);
+        db.users[idx].status = document.getElementById('edit-status').value;
+
+        saveDb();
+        closeEditModal();
+        loadEmployees();
+        alert('Staff particulars successfully saved.');
+      }
+    }
+
+    // VIEW: EMPLOYEE PROFILE COMPLIANCE TRACKING
+    function viewProfile(id) {
+      const emp = db.users.find(u => u.id === id);
+      if (!emp) return;
+
+      document.getElementById('prof-id').value = emp.id;
+      document.getElementById('prof-name').textContent = emp.name;
+      document.getElementById('prof-subtitle').textContent = emp.department + ' | ' + emp.job_title;
+
+      document.getElementById('prof-visa-type').value = emp.visa_type || '';
+      document.getElementById('prof-visa-number').value = emp.visa_number || '';
+      document.getElementById('prof-visa-expiry').value = emp.visa_expiry_date || '';
+      document.getElementById('prof-share-code').value = emp.share_code || '';
+
+      loadCategoriesDropdown();
+      loadDocumentsList(emp.id);
+      navigate('profile');
+    }
+
+    // Dynamic Category Manager loader [1]
+    function loadCategoriesDropdown() {
+      const select = document.getElementById('prof-doc-type');
+      select.innerHTML = '';
+      
+      if (!db.categories) {
+        db.categories = ["Passport", "Visa", "Right-to-Work", "Contract", "Certificate"];
+      }
+
+      db.categories.forEach(cat => {
+        select.innerHTML += `<option value="${cat}">${cat}</option>`;
+      });
+    }
+
+    function handleAddCategoryPrompt() {
+      const newCat = prompt("Enter custom document category name:");
+      if (!newCat) return;
+      const cleanCat = newCat.trim();
+      if (cleanCat === "") return;
+
+      if (!db.categories.includes(cleanCat)) {
+        db.categories.push(cleanCat);
+        saveDb();
+        loadCategoriesDropdown();
+        alert(`Category "${cleanCat}" successfully registered.`);
+      } else {
+        alert("This category is already registered in your vault.");
+      }
+    }
+
+    // Load Documents with Delete Action
+    function loadDocumentsList(userId) {
+      const docList = document.getElementById('prof-documents-list');
+      docList.innerHTML = '';
+      const docs = db.documents.filter(d => d.user_id === userId);
+
+      if (docs.length === 0) {
+        docList.innerHTML = '<p class="text-xs text-slate-500 py-3">No compliance records loaded.</p>';
+      } else {
+        docs.forEach(d => {
+          docList.innerHTML += `
+            <div class="flex justify-between items-center py-2.5 animate-fade-in">
+              <div>
+                <p class="text-sm font-semibold text-white">${d.type}</p>
+                <span class="text-[10px] text-slate-500">${d.file_name}</span>
               </div>
-              <p class="text-[9px] text-red-300 mt-1 leading-relaxed">
+              <div class="flex items-center gap-3">
+                <a href="#" onclick="downloadSimulatedDoc('${d.file_name}')" class="text-xs text-brand-500 hover:underline">Download</a>
+                ${currentUser.role !== 'Staff' ? `
+                  <button onclick="handleDeleteDoc('${d.id}', '${userId}')" class="text-xs text-red-500 hover:text-red-400 hover:underline flex items-center gap-1">
+                    <i data-lucide="trash-2" class="h-3.5 w-3.5"></i> Delete
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        });
+        lucide.createIcons();
+      }
+    }
+
+    // Simulated local safe browser download helper for files
+    function downloadSimulatedDoc(fileName) {
+      const content = `Simulated UK RTW Document Record: ${fileName}`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName.endsWith('.pdf') ? fileName : fileName + '.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Handled dynamic delete operation for uploaded docs [1]
+    function handleDeleteDoc(docId, userId) {
+      if (!confirm('Are you sure you want to delete this document?')) return;
+      db.documents = db.documents.filter(d => d.id !== docId);
+      saveDb();
+      loadDocumentsList(userId);
+    }
+
+    function handleUpdateCompliance(e) {
+      e.preventDefault();
+      const id = document.getElementById('prof-id').value;
+      const idx = db.users.findIndex(u => u.id === id);
+
+      if (idx !== -1) {
+        db.users[idx].visa_type = document.getElementById('prof-visa-type').value;
+        db.users[idx].visa_number = document.getElementById('prof-visa-number').value;
+        db.users[idx].visa_expiry_date = document.getElementById('prof-visa-expiry').value;
+        db.users[idx].share_code = document.getElementById('prof-share-code').value;
+        saveDb();
+        alert('Immigration records updated.');
+      }
+    }
+
+    function handleUploadDoc(e) {
+      e.preventDefault();
+      const userId = document.getElementById('prof-id').value;
+      const type = document.getElementById('prof-doc-type').value;
+      const file = document.getElementById('prof-doc-file').files[0];
+
+      if (!file) return;
+
+      db.documents.push({
+        id: String(Date.now()),
+        user_id: userId,
+        type: type,
+        file_name: file.name
+      });
+      saveDb();
+      loadDocumentsList(userId);
+      document.getElementById('prof-doc-file').value = '';
+      alert('Document securely added to profile.');
+    }
+
+    // VIEW: COMPLIANCE AUDITING
+    function loadCompliance() {
+      const tbody = document.getElementById('compliance-table-body');
+      tbody.innerHTML = '';
+
+      db.users.filter(u => u.status !== 'Vacant').forEach(emp => {
+        let badge = '';
+        if (emp.nationality === 'British') {
+          badge = '<span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-xs border border-emerald-500/20">Citizen</span>';
+        } else if (!emp.share_code) {
+          badge = '<span class="bg-red-500/10 text-red-400 px-2 py-0.5 rounded text-xs border border-red-500/20">Missing share code</span>';
+        } else {
+          badge = '<span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-xs border border-emerald-500/20">Verified RTW status</span>';
+        }
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-3 font-semibold text-white">${emp.name}</td>
+            <td class="p-3 text-slate-400">${emp.visa_type || 'N/A'}</td>
+            <td class="p-3 text-slate-300">${emp.visa_expiry_date || 'Permanent Status'}</td>
+            <td class="p-3">${badge}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // VIEW: ATTENDANCE CLOCK IN/OUT
+    let clockedInState = false;
+    function loadAttendance() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const activeRecord = db.attendance.find(a => a.user_id === currentUser.id && a.date === todayStr && a.clock_out === '');
+      clockedInState = !!activeRecord;
+
+      const header = document.getElementById('attendance-state-title');
+      const btn = document.getElementById('clock-btn');
+
+      if (clockedInState) {
+        header.textContent = 'Shift Active (In Progress)';
+        btn.textContent = 'Stop Work Shift';
+        btn.className = 'flex items-center gap-2 rounded-lg bg-red-600 px-6 py-3 font-semibold text-sm text-white hover:bg-red-500 transition-all';
+      } else {
+        header.textContent = 'Outside Active Shift';
+        btn.textContent = 'Start Work Shift';
+        btn.className = 'flex items-center gap-2 rounded-lg bg-brand-500 px-6 py-3 font-semibold text-sm text-white hover:bg-brand-600 transition-all';
+      }
+
+      const tbody = document.getElementById('attendance-table-body');
+      tbody.innerHTML = '';
+      db.attendance.forEach(a => {
+        const staff = db.users.find(u => u.id === a.user_id);
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-900/40">
+            <td class="p-3 font-semibold text-white">${staff ? staff.name : 'Unknown'}</td>
+            <td class="p-3 text-slate-400">${a.date}</td>
+            <td class="p-3 text-emerald-400 font-mono">${a.clock_in}</td>
+            <td class="p-3 text-slate-400 font-mono">${a.clock_out || 'Active Shift'}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function handleClockAction() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const nowStr = new Date().toTimeString().split(' ')[0].substring(0, 5);
+
+      if (clockedInState) {
+        const idx = db.attendance.findIndex(a => a.user_id === currentUser.id && a.date === todayStr && a.clock_out === '');
+        if (idx !== -1) {
+          db.attendance[idx].clock_out = nowStr;
+          saveDb();
+        }
+      } else {
+        db.attendance.push({
+          id: String(Date.now()),
+          user_id: currentUser.id,
+          date: todayStr,
+          clock_in: nowStr,
+          clock_out: ''
+        });
+        saveDb();
+      }
+      loadAttendance();
+    }
+
+    // VIEW: SCHEDULING ROTA
+    function loadScheduling() {
+      const select = document.getElementById('shift-user-select');
+      select.innerHTML = '';
+      db.users.filter(u => u.status !== 'Vacant').forEach(u => {
+        select.innerHTML += `<option value="${u.id}">${u.name} (${u.department})</option>`;
+      });
+
+      const container = document.getElementById('shifts-container');
+      container.innerHTML = '';
+      db.shifts.forEach(s => {
+        const staff = db.users.find(u => u.id === s.user_id);
+        container.innerHTML += `
+          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center">
+            <div>
+              <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Employee'}</p>
+              <span class="text-[10px] text-slate-500">${s.date} | ${s.start_time} - ${s.end_time}</span>
+            </div>
+            <div class="text-right">
+              <span class="rounded bg-slate-800 px-2 py-0.5 text-xs text-brand-500 border border-brand-500/10">
+                ${s.department}
+              </span>
+              <p class="text-[10px] text-slate-500 mt-1 italic">${s.notes || ''}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function handleCreateShift(e) {
+      e.preventDefault();
+      const payload = {
+        id: String(Date.now()),
+        user_id: document.getElementById('shift-user-select').value,
+        date: document.getElementById('shift-date').value,
+        start_time: document.getElementById('shift-start').value,
+        end_time: document.getElementById('shift-end').value,
+        department: document.getElementById('shift-dept').value,
+        notes: document.getElementById('shift-notes').value
+      };
+
+      db.shifts.push(payload);
+      saveDb();
+      loadScheduling();
+      document.getElementById('shift-notes').value = '';
+      alert('Shift assigned to rota.');
+    }
+
+    // VIEW: LEAVE WORKFLOWS
+    function loadLeave() {
+      const container = document.getElementById('leaves-container');
+      container.innerHTML = '';
+
+      db.leave.forEach(l => {
+        const staff = db.users.find(u => u.id === l.user_id);
+        const canAction = l.status === 'Pending' && currentUser.role !== 'Staff';
+
+        container.innerHTML += `
+          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
+            <div>
+              <div class="flex items-center gap-2">
+                <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Staff Member'}</p>
+                <span class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">${l.type}</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">${l.start_date} to ${l.end_date} (${l.total_days} days)</p>
+              <p class="text-xs text-slate-400 italic mt-1">"${l.reason}"</p>
+            </div>
+            <div class="flex items-center gap-2">
+              ${canAction ? `
+                <button onclick="updateLeaveStatus('${l.id}', 'Approved')" class="rounded bg-emerald-600/20 hover:bg-emerald-600 border border-emerald-500/20 px-2 py-1 text-xs text-emerald-400 hover:text-white transition-all">Approve</button>
+                <button onclick="updateLeaveStatus('${l.id}', 'Rejected')" class="rounded bg-red-600/20 hover:bg-red-600 border border-red-500/20 px-2 py-1 text-xs text-red-400 hover:text-white transition-all">Reject</button>
+              ` : `
+                <span class="px-2 py-0.5 rounded text-xs border ${
+                  l.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                  l.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-800 text-slate-400'
+                }">${l.status}</span>
+              `}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function handleRequestLeave(e) {
+      e.preventDefault();
+      const start = new Date(document.getElementById('leave-start').value);
+      const end = new Date(document.getElementById('leave-end').value);
+      const totalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+      const payload = {
+        id: String(Date.now()),
+        user_id: currentUser.id,
+        type: document.getElementById('leave-type').value,
+        start_date: document.getElementById('leave-start').value,
+        end_date: document.getElementById('leave-end').value,
+        total_days: totalDays,
+        reason: document.getElementById('leave-reason').value,
+        status: 'Pending'
+      };
+
+      db.leave.push(payload);
+      saveDb();
+      loadLeave();
+      document.getElementById('leave-reason').value = '';
+      alert('Leave request submitted.');
+    }
+
+    function updateLeaveStatus(id, status) {
+      const idx = db.leave.findIndex(l => l.id === id);
+      if (idx !== -1) {
+        db.leave[idx].status = status;
+        saveDb();
+        loadLeave();
+      }
+    }
+
+    // VIEW: PAYROLL (FUNCTIONAL MANAGER SYSTEM) [1]
+    function loadPayroll() {
+      // Load user selector list
+      const select = document.getElementById('pay-user-select');
+      select.innerHTML = '';
+      db.users.filter(u => u.status !== 'Vacant').forEach(u => {
+        select.innerHTML += `<option value="${u.id}">${u.name} (Hourly rate: £${parseFloat(u.hourly_rate || 0).toFixed(2)})</option>`;
+      });
+
+      const tbody = document.getElementById('payroll-table-body');
+      tbody.innerHTML = '';
+
+      db.payroll.forEach(p => {
+        const staff = db.users.find(u => u.id === p.user_id);
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-900/40 animate-fade-in">
+            <td class="p-4 font-semibold text-white">${staff ? staff.name : 'Employee'}</td>
+            <td class="p-4 text-slate-400">${p.period_start} to ${p.period_end}</td>
+            <td class="p-4 text-slate-300">${p.hours_worked} hrs</td>
+            <td class="p-4 text-slate-300">£${parseFloat(p.pay).toFixed(2)}</td>
+            <td class="p-4 text-red-400">-£${parseFloat(p.deductions).toFixed(2)}</td>
+            <td class="p-4 text-emerald-400 font-bold">£${parseFloat(p.net_pay).toFixed(2)}</td>
+            <td class="p-4 text-right">
+              ${currentUser.role !== 'Staff' ? `
+                <button onclick="handleDeletePayroll('${p.id}')" class="text-xs text-red-500 hover:text-red-400 flex items-center justify-end gap-1 w-full font-semibold">
+                  <i data-lucide="trash-2" class="h-3.5 w-3.5"></i> Delete
+                </button>
+              ` : '-'}
+            </td>
+          </tr>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    function handleAddPayroll(e) {
+      e.preventDefault();
+      const userId = document.getElementById('pay-user-select').value;
+      const emp = db.users.find(u => u.id === userId);
+      if (!emp) return;
+
+      const hours = parseFloat(document.getElementById('pay-hours').value) || 0;
+      const deductions = parseFloat(document.getElementById('pay-deductions').value) || 0;
+      
+      // Calculate automatically from profile rates [1]
+      const gross = hours * (parseFloat(emp.hourly_rate) || 0);
+      const net = Math.max(0, gross - deductions);
+
+      db.payroll.push({
+        id: String(Date.now()),
+        user_id: userId,
+        period_start: document.getElementById('pay-start').value,
+        period_end: document.getElementById('pay-end').value,
+        hours_worked: hours,
+        pay: gross.toFixed(2),
+        deductions: deductions.toFixed(2),
+        net_pay: net.toFixed(2)
+      });
+      saveDb();
+      loadPayroll();
+      
+      document.getElementById('add-payroll-form').reset();
+      document.getElementById('add-payroll-form').classList.add('hidden');
+      alert('Payroll logged and synchronised.');
+    }
+
+    function handleDeletePayroll(payId) {
+      if (!confirm('Are you sure you want to delete this payroll record?')) return;
+      db.payroll = db.payroll.filter(p => p.id !== payId);
+      saveDb();
+      loadPayroll();
+    }
+
+    // EXPORTS CSV LOG GENERATOR
+    function downloadReport(type) {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      if (type === 'roster') {
+        csvContent += "Name,Email,Role,Department,Rate\n";
+        db.users.forEach(e => {
+          csvContent += `"${e.name}","${e.email}","${e.role}","${e.department}","${e.hourly_rate}"\n`;
+        });
+      } else {
+        csvContent += "Name,Nationality,Visa Type,Expiry,Share Code\n";
+        db.users.forEach(e => {
+          csvContent += `"${e.name}","${e.nationality}","${e.visa_type || 'N/A'}","${e.visa_expiry_date || 'N/A'}","${e.share_code || 'N/A'}"\n`;
+        });
+      }
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", type + "_report.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // session validation check on load
+    const activeSession = sessionStorage.getItem('current_user');
+    if (activeSession) {
+      currentUser = JSON.parse(activeSession);
+      initWorkspace();
+    }
+  </script>
+</body>
+</html>
