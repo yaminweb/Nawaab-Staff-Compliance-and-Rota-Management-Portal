@@ -47,13 +47,13 @@
   <div id="auth-view" class="min-h-screen flex items-center justify-center bg-slate-950 px-4">
     <div class="w-full max-w-md space-y-8 rounded-2xl border border-slate-800 bg-slate-900/50 p-8 backdrop-blur-md">
       
-      <!-- Brand Header -->
+      <!-- Brand Header (Falls back to high fidelity SVG if image missing) -->
       <div class="text-center space-y-4">
         <div class="flex flex-col items-center justify-center">
-          <img src="logo.png" id="login-image-logo" alt="Nawaab Logo" class="h-28 w-auto object-contain mx-auto transition-transform duration-200 hover:scale-105">
+          <img src="logo.png" id="login-image-logo" alt="Nawaab Logo" class="h-28 w-auto object-contain mx-auto transition-transform duration-200 hover:scale-105" onerror="showLoginSvgFallback()">
           
           <!-- Fallback Inline SVG Logo -->
-          <div id="login-svg-fallback" class="hidden flex flex-col items-center animate-fade-in">
+          <div id="login-svg-fallback" class="hidden flex flex-col items-center">
             <svg class="h-24 w-auto text-brand-500" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M100 20C75 20 60 35 60 55C60 62 65 68 72 70C75 62 82 55 90 52C92 48 95 45 100 45C108 45 115 52 115 60C115 68 108 75 100 75C95 75 92 72 90 68C82 72 75 80 72 90C85 95 100 95 115 90C125 80 135 68 135 55C135 35 120 20 100 20Z" fill="#b91c1c"/>
               <path d="M100 10C100 10 108 18 105 25C102 32 95 35 95 35C95 35 105 32 110 25C115 18 100 10 100 10Z" fill="#991b1b"/>
@@ -100,8 +100,8 @@
       <div class="space-y-6">
         <!-- Sidebar Brand Header Area -->
         <div class="flex flex-col items-center space-y-2 border-b border-slate-800 pb-6">
-          <img src="logo.png" id="sidebar-image-logo" alt="Nawaab Logo" class="h-20 w-auto object-contain mx-auto">
-          <div id="sidebar-svg-fallback" class="hidden flex flex-col items-center text-center animate-fade-in">
+          <img src="logo.png" id="sidebar-image-logo" alt="Nawaab Logo" class="h-20 w-auto object-contain mx-auto" onerror="showSidebarSvgFallback()">
+          <div id="sidebar-svg-fallback" class="hidden flex flex-col items-center text-center">
             <h1 class="text-lg font-serif font-bold text-white tracking-widest uppercase">NAWAAB</h1>
             <span class="text-[9px] tracking-widest text-brand-500 uppercase font-bold">AUTHENTIC INDIAN</span>
           </div>
@@ -209,7 +209,7 @@
 
         <div class="grid gap-6 lg:grid-cols-3">
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-semibold text-white font-serif">Staff Directory Overview</h2>
+            <h2 class="text-lg font-semibold text-white font-serif font-serif">Staff Directory Overview</h2>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm text-slate-300">
                 <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
@@ -402,27 +402,21 @@
               </div>
             </div>
 
-            <!-- Prominent custom category creation zone [1] -->
-            <div class="rounded-lg bg-slate-900 p-4 border border-slate-800/80 space-y-2">
-              <h4 class="text-[10px] font-bold text-brand-500 uppercase tracking-widest">Add Custom Category</h4>
-              <div class="flex gap-2">
-                <input id="new-custom-category" type="text" placeholder="e.g. Food Safety L2" class="block w-full rounded border border-slate-800 bg-slate-950 p-1.5 text-xs text-slate-100 focus:outline-none">
-                <button type="button" onclick="handleAddCategoryPrompt()" class="bg-brand-500 hover:bg-brand-600 px-3 py-1.5 rounded text-white text-xs font-semibold whitespace-nowrap shadow-lg">Create Category</button>
-              </div>
-            </div>
-
             <!-- Upload simulation with custom categories -->
             <form id="prof-upload-form" onsubmit="handleUploadDoc(event)" class="rounded-lg bg-slate-950 p-4 border border-slate-800 space-y-4">
               <h3 class="text-xs font-semibold uppercase text-slate-400">Upload New Record</h3>
               <div class="grid gap-4 grid-cols-2">
                 <div>
-                  <label class="block text-[10px] font-semibold text-slate-400">Category Selection</label>
-                  <select id="prof-doc-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-900 p-1.5 text-xs text-slate-100 focus:outline-none">
-                    <!-- Categories generated dynamically -->
-                  </select>
+                  <label class="block text-[10px] font-semibold text-slate-400">Category</label>
+                  <div class="flex gap-2">
+                    <select id="prof-doc-type" class="mt-1 block w-full rounded border border-slate-800 bg-slate-900 p-1.5 text-xs text-slate-100 font-medium focus:outline-none">
+                      <!-- Categories generated dynamically -->
+                    </select>
+                    <button type="button" onclick="handleAddCategoryPrompt()" class="mt-1 bg-brand-500 hover:bg-brand-600 px-2.5 rounded text-white text-xs font-bold shadow-lg" title="Add Custom Category">+</button>
+                  </div>
                 </div>
                 <div>
-                  <label class="block text-[10px] font-semibold text-slate-400">Select Document</label>
+                  <label class="block text-[10px] font-semibold text-slate-400">Mock Select Document</label>
                   <input id="prof-doc-file" required type="file" class="mt-1 block w-full text-xs text-slate-400">
                 </div>
               </div>
@@ -488,11 +482,11 @@
       </section>
 
       <!-- ========================================== -->
-      <!-- VIEW: ATTENDANCE (FUNCTIONAL TERMINAL WITH DELETE OPTION) -->
+      <!-- VIEW: ATTENDANCE -->
       <!-- ========================================== -->
       <section id="view-attendance" class="view-panel hidden space-y-6">
         <div>
-          <h1 class="text-2xl font-bold text-white font-serif">Work Clock Terminal</h1>
+          <h1 class="text-2xl font-bold text-white font-serif font-serif">Work Clock Terminal</h1>
           <p class="text-sm text-slate-400">Log daily work hours and check shift timings</p>
         </div>
 
@@ -511,7 +505,7 @@
           </div>
 
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-semibold text-white font-serif bg-transparent">Daily Attendance Log</h2>
+            <h2 class="text-lg font-semibold text-white font-serif font-serif">Daily Attendance Log</h2>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm text-slate-300">
                 <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
@@ -520,7 +514,6 @@
                     <th class="p-3">Date</th>
                     <th class="p-3">Clock In</th>
                     <th class="p-3">Clock Out</th>
-                    <th class="p-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="attendance-table-body" class="divide-y divide-slate-800">
@@ -859,26 +852,16 @@
     let currentUser = null;
     let firebaseDb = null;
 
-    // Direct image handler error capture triggers before script tags compiled [1]
-    window.addEventListener('DOMContentLoaded', () => {
-      const loginImg = document.getElementById('login-image-logo');
-      if (loginImg) {
-        loginImg.onerror = () => {
-          loginImg.style.display = 'none';
-          const fallback = document.getElementById('login-svg-fallback');
-          if (fallback) fallback.classList.remove('hidden');
-        };
-      }
-      
-      const sidebarImg = document.getElementById('sidebar-image-logo');
-      if (sidebarImg) {
-        sidebarImg.onerror = () => {
-          sidebarImg.style.display = 'none';
-          const fallback = document.getElementById('sidebar-svg-fallback');
-          if (fallback) fallback.classList.remove('hidden');
-        };
-      }
-    });
+    // DUAL LOGO RENDER ENGINE (Checks if local file logo.png is loaded, falls back to SVG)
+    function showLoginSvgFallback() {
+      document.getElementById('login-image-logo').classList.add('hidden');
+      document.getElementById('login-svg-fallback').classList.remove('hidden');
+    }
+
+    function showSidebarSvgFallback() {
+      document.getElementById('sidebar-image-logo').classList.add('hidden');
+      document.getElementById('sidebar-svg-fallback').classList.remove('hidden');
+    }
 
     // Seed default Nawaab datasets with defensive initialization to secure older DB updates
     function initDatabase() {
@@ -991,8 +974,8 @@
         const dot = document.getElementById('firebase-dot');
         const txt = document.getElementById('firebase-txt');
         
-        if (dot) dot.className = "h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse";
-        if (txt) txt.textContent = "Cloud Sync Active";
+        dot.className = "h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse";
+        txt.textContent = "Cloud Sync Active";
 
         let isFirstLoad = true;
         // Realtime data listener
@@ -1014,29 +997,108 @@
         }, (error) => {
           // If read/write permissions are rejected [1]
           console.error("Firebase Read Failed (Rules Lock):", error);
-          if (dot) dot.className = "h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse";
-          if (txt) txt.textContent = "Sync Error: Locked Rules";
-          if (badge) {
-            badge.className = "mb-3 text-[10px] rounded px-2.5 py-2 flex flex-col gap-1.5 bg-red-950/30 border border-red-500/20";
-            badge.innerHTML = `
-              <div class="flex items-center gap-1.5">
-                <span class="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                <span class="text-red-400 font-bold">Cloud Sync Blocked</span>
-              </div>
-              <p class="text-[9px] text-red-300 mt-1 leading-relaxed">
-                Your Firebase database rules are locked. 
-                <br><span class="underline font-bold">To fix this:</span> Go to Firebase Console -> Realtime Database -> Rules. Change <code class="bg-black/30 px-1 py-0.5 rounded">.read</code> and <code class="bg-black/30 px-1 py-0.5 rounded font-mono">.write</code> to <code class="text-emerald-400 font-mono font-bold">true</code>, then click Publish!
-              </p>
-            `;
-          }
+          dot.className = "h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse";
+          txt.textContent = "Sync Error: Locked Rules";
+          badge.className = "mb-3 text-[10px] rounded px-2.5 py-2 flex flex-col gap-1.5 bg-red-950/30 border border-red-500/20";
+          badge.innerHTML = `
+            <div class="flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"></span>
+              <span class="text-red-400 font-bold">Cloud Sync Blocked</span>
+            </div>
+            <p class="text-[9px] text-red-300 mt-1 leading-relaxed">
+              Your Firebase database rules are locked. 
+              <br><span class="underline font-bold">To fix this:</span> Go to Firebase Console -> Realtime Database -> Rules. Change <code class="bg-black/30 px-1 py-0.5 rounded">.read</code> and <code class="bg-black/30 px-1 py-0.5 rounded font-mono">.write</code> to <code class="text-emerald-400 font-mono font-bold">true</code>, then click Publish!
+            </p>
+          `;
         });
       } catch (err) {
         console.error("Firebase Connection Error: ", err);
       }
     }
 
+    // Run-time bootstrap trigger
+    initDatabase();
+    connectFirebase();
+
     // ==========================================
-    // DATA BINDINGS & VIEW CONTROLLERS
+    // 5. AUTHENTICATION & LOGIN CONTROLLER
+    // ==========================================
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+      const errorDiv = document.getElementById('login-error');
+
+      const user = db.users.find(u => u.email === email && u.password === pass);
+      if (user) {
+        currentUser = user;
+        sessionStorage.setItem('current_user', JSON.stringify(user));
+        errorDiv.classList.add('hidden');
+        initWorkspace();
+      } else {
+        errorDiv.textContent = 'Incorrect credentials';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      sessionStorage.removeItem('current_user');
+      document.getElementById('workspace').classList.add('hidden');
+      document.getElementById('auth-view').classList.remove('hidden');
+    }
+
+    function initWorkspace() {
+      document.getElementById('auth-view').classList.add('hidden');
+      document.getElementById('workspace').classList.remove('hidden');
+
+      document.getElementById('user-display-name').textContent = currentUser.name;
+      document.getElementById('user-display-role').textContent = currentUser.role;
+
+      // Restrict structural tasks from base-level staff roles
+      if (currentUser.role === 'Staff') {
+        document.getElementById('add-employee-btn').classList.add('hidden');
+        document.getElementById('assign-shift-panel').classList.add('hidden');
+        document.getElementById('prof-comp-btn').classList.add('hidden');
+        document.getElementById('prof-upload-form').classList.add('hidden');
+        document.getElementById('add-payroll-btn').classList.add('hidden');
+      } else {
+        document.getElementById('add-employee-btn').classList.remove('hidden');
+        document.getElementById('assign-shift-panel').classList.remove('hidden');
+        document.getElementById('prof-comp-btn').classList.remove('hidden');
+        document.getElementById('prof-upload-form').classList.remove('hidden');
+        document.getElementById('add-payroll-btn').classList.remove('hidden');
+      }
+
+      navigate('dashboard');
+    }
+
+    // ==========================================
+    // 6. ROUTER NAVIGATION
+    // ==========================================
+    function navigate(viewId) {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-brand-500/10', 'text-brand-500', 'border', 'border-brand-500/20'));
+
+      document.getElementById('view-' + viewId).classList.remove('hidden');
+      lucide.createIcons();
+
+      // UI update hooks
+      if (viewId === 'dashboard') loadDashboard();
+      if (viewId === 'employees') loadEmployees();
+      if (viewId === 'compliance') loadCompliance();
+      if (viewId === 'attendance') loadAttendance();
+      if (viewId === 'scheduling') loadScheduling();
+      if (viewId === 'leave') loadLeave();
+      if (viewId === 'payroll') loadPayroll();
+    }
+
+    function toggleForm(id) {
+      document.getElementById(id).classList.toggle('hidden');
+    }
+
+    // ==========================================
+    // 7. OPERATION FLOW PANELS
     // ==========================================
 
     // VIEW: DASHBOARD
@@ -1084,8 +1146,6 @@
     function loadEmployees() {
       const tbody = document.getElementById('employees-table-body');
       tbody.innerHTML = '';
-      const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
-      
       db.users.forEach(emp => {
         tbody.innerHTML += `
           <tr class="hover:bg-slate-900/40">
@@ -1098,8 +1158,8 @@
             <td class="p-4 text-slate-400">${emp.nationality}</td>
             <td class="p-4 text-right space-x-3">
               <button onclick="viewProfile('${emp.id}')" class="text-xs text-indigo-400 hover:underline">Profile</button>
-              ${isManagerOrOwner ? `<button onclick="openEditModal('${emp.id}')" class="text-xs text-emerald-400 hover:underline">Edit</button>` : ''}
-              ${isManagerOrOwner && emp.id !== currentUser.id ? `<button onclick="deleteEmployee('${emp.id}')" class="text-xs text-red-400 hover:underline">Remove</button>` : ''}
+              ${currentUser.role !== 'Staff' ? `<button onclick="openEditModal('${emp.id}')" class="text-xs text-emerald-400 hover:underline">Edit</button>` : ''}
+              ${currentUser.role !== 'Staff' && emp.id !== currentUser.id ? `<button onclick="deleteEmployee('${emp.id}')" class="text-xs text-red-400 hover:underline">Remove</button>` : ''}
             </td>
           </tr>
         `;
@@ -1214,7 +1274,6 @@
     // Dynamic Category Manager loader [1]
     function loadCategoriesDropdown() {
       const select = document.getElementById('prof-doc-type');
-      if (!select) return;
       select.innerHTML = '';
       
       if (!db.categories) {
@@ -1227,15 +1286,15 @@
     }
 
     function handleAddCategoryPrompt() {
-      const input = document.getElementById('new-custom-category');
-      const cleanCat = input.value.trim();
+      const newCat = prompt("Enter custom document category name:");
+      if (!newCat) return;
+      const cleanCat = newCat.trim();
       if (cleanCat === "") return;
 
       if (!db.categories.includes(cleanCat)) {
         db.categories.push(cleanCat);
         saveDb();
         loadCategoriesDropdown();
-        input.value = '';
         alert(`Category "${cleanCat}" successfully registered.`);
       } else {
         alert("This category is already registered in your vault.");
@@ -1247,7 +1306,6 @@
       const docList = document.getElementById('prof-documents-list');
       docList.innerHTML = '';
       const docs = db.documents.filter(d => d.user_id === userId);
-      const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
 
       if (docs.length === 0) {
         docList.innerHTML = '<p class="text-xs text-slate-500 py-3">No compliance records loaded.</p>';
@@ -1260,8 +1318,8 @@
                 <span class="text-[10px] text-slate-500">${d.file_name}</span>
               </div>
               <div class="flex items-center gap-3">
-                <button onclick="downloadOriginalDoc('${d.id}')" class="text-xs text-brand-500 hover:underline">Download</button>
-                ${isManagerOrOwner ? `
+                <a href="#" onclick="downloadSimulatedDoc('${d.file_name}')" class="text-xs text-brand-500 hover:underline">Download</a>
+                ${currentUser.role !== 'Staff' ? `
                   <button onclick="handleDeleteDoc('${d.id}', '${userId}')" class="text-xs text-red-500 hover:text-red-400 hover:underline flex items-center gap-1">
                     <i data-lucide="trash-2" class="h-3.5 w-3.5"></i> Delete
                   </button>
@@ -1274,25 +1332,18 @@
       }
     }
 
-    // Dynamic direct browser base64 attachment download pipeline [1]
-    function downloadOriginalDoc(docId) {
-      const doc = db.documents.find(d => d.id === docId);
-      if (!doc) return;
-      
-      const link = document.createElement('a');
-      if (doc.file_data) {
-        // Standard data URI (base64) download
-        link.href = doc.file_data;
-      } else {
-        // Fallback for mock seeded documents
-        const content = `Simulated UK RTW Document Record: ${doc.file_name}`;
-        const blob = new Blob([content], { type: 'text/plain' });
-        link.href = URL.createObjectURL(blob);
-      }
-      link.download = doc.file_name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    // Simulated local safe browser download helper for files
+    function downloadSimulatedDoc(fileName) {
+      const content = `Simulated UK RTW Document Record: ${fileName}`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName.endsWith('.pdf') ? fileName : fileName + '.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     // Handled dynamic delete operation for uploaded docs [1]
@@ -1318,32 +1369,24 @@
       }
     }
 
-    // Upload with Base64 FileReader [1]
     function handleUploadDoc(e) {
       e.preventDefault();
       const userId = document.getElementById('prof-id').value;
       const type = document.getElementById('prof-doc-type').value;
-      const fileInput = document.getElementById('prof-doc-file');
-      const file = fileInput.files[0];
+      const file = document.getElementById('prof-doc-file').files[0];
 
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const base64Data = evt.target.result;
-        db.documents.push({
-          id: String(Date.now()),
-          user_id: userId,
-          type: type,
-          file_name: file.name,
-          file_data: base64Data // Preserved format base64 string
-        });
-        saveDb();
-        loadDocumentsList(userId);
-        fileInput.value = '';
-        alert('Original file securely saved to database.');
-      };
-      reader.readAsDataURL(file);
+      db.documents.push({
+        id: String(Date.now()),
+        user_id: userId,
+        type: type,
+        file_name: file.name
+      });
+      saveDb();
+      loadDocumentsList(userId);
+      document.getElementById('prof-doc-file').value = '';
+      alert('Document securely added to profile.');
     }
 
     // VIEW: COMPLIANCE AUDITING
@@ -1372,7 +1415,7 @@
       });
     }
 
-    // VIEW: ATTENDANCE CLOCK IN/OUT (WITH TRASH ACTION EXPORT) [1]
+    // VIEW: ATTENDANCE CLOCK IN/OUT
     let clockedInState = false;
     function loadAttendance() {
       const todayStr = new Date().toISOString().split('T')[0];
@@ -1381,7 +1424,6 @@
 
       const header = document.getElementById('attendance-state-title');
       const btn = document.getElementById('clock-btn');
-      const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
 
       if (clockedInState) {
         header.textContent = 'Shift Active (In Progress)';
@@ -1401,19 +1443,11 @@
           <tr class="hover:bg-slate-900/40">
             <td class="p-3 font-semibold text-white">${staff ? staff.name : 'Unknown'}</td>
             <td class="p-3 text-slate-400">${a.date}</td>
-            <td class="p-3 text-emerald-400 font-mono font-semibold">${a.clock_in}</td>
+            <td class="p-3 text-emerald-400 font-mono">${a.clock_in}</td>
             <td class="p-3 text-slate-400 font-mono">${a.clock_out || 'Active Shift'}</td>
-            <td class="p-3 text-right">
-              ${isManagerOrOwner ? `
-                <button onclick="handleDeleteAttendance('${a.id}')" class="text-xs text-red-500 hover:text-red-400 font-semibold flex items-center justify-end gap-1 w-full">
-                  <i data-lucide="trash-2" class="h-3.5 w-3.5"></i> Delete
-                </button>
-              ` : '-'}
-            </td>
           </tr>
         `;
       });
-      lucide.createIcons();
     }
 
     function handleClockAction() {
@@ -1439,57 +1473,33 @@
       loadAttendance();
     }
 
-    function handleDeleteAttendance(id) {
-      if (!confirm('Are you sure you want to delete this attendance log?')) return;
-      db.attendance = db.attendance.filter(a => a.id !== id);
-      saveDb();
-      loadAttendance();
-    }
-
-    // VIEW: SCHEDULING ROTA (WITH ROTATIONAL DELETION ACTION)
+    // VIEW: SCHEDULING ROTA
     function loadScheduling() {
       const select = document.getElementById('shift-user-select');
-      if (select) {
-        select.innerHTML = '';
-        db.users.filter(u => u.status !== 'Vacant').forEach(u => {
-          select.innerHTML += `<option value="${u.id}">${u.name} (${u.department})</option>`;
-        });
-      }
+      select.innerHTML = '';
+      db.users.filter(u => u.status !== 'Vacant').forEach(u => {
+        select.innerHTML += `<option value="${u.id}">${u.name} (${u.department})</option>`;
+      });
 
       const container = document.getElementById('shifts-container');
       container.innerHTML = '';
-      const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
-
       db.shifts.forEach(s => {
         const staff = db.users.find(u => u.id === s.user_id);
         container.innerHTML += `
-          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
+          <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center">
             <div>
               <p class="text-sm font-semibold text-white">${staff ? staff.name : 'Employee'}</p>
               <span class="text-[10px] text-slate-500">${s.date} | ${s.start_time} - ${s.end_time}</span>
             </div>
-            <div class="text-right flex flex-col items-end gap-1">
-              <span class="rounded bg-slate-800 px-2 py-0.5 text-xs text-brand-500 border border-brand-500/10 font-bold">
+            <div class="text-right">
+              <span class="rounded bg-slate-800 px-2 py-0.5 text-xs text-brand-500 border border-brand-500/10">
                 ${s.department}
               </span>
-              <p class="text-[10px] text-slate-500 italic mt-0.5">${s.notes || ''}</p>
-              ${isManagerOrOwner ? `
-                <button onclick="handleDeleteShift('${s.id}')" class="text-[10px] text-red-500 hover:text-red-400 font-bold flex items-center gap-1 mt-1 transition-colors">
-                  <i data-lucide="trash-2" class="h-3 w-3"></i> Delete
-                </button>
-              ` : ''}
+              <p class="text-[10px] text-slate-500 mt-1 italic">${s.notes || ''}</p>
             </div>
           </div>
         `;
       });
-      lucide.createIcons();
-    }
-
-    function handleDeleteShift(id) {
-      if (!confirm('Are you sure you want to delete this scheduled shift?')) return;
-      db.shifts = db.shifts.filter(s => s.id !== id);
-      saveDb();
-      loadScheduling();
     }
 
     function handleCreateShift(e) {
@@ -1511,15 +1521,14 @@
       alert('Shift assigned to rota.');
     }
 
-    // VIEW: LEAVE WORKFLOWS (WITH CANCEL REQUEST ACTION)
+    // VIEW: LEAVE WORKFLOWS
     function loadLeave() {
       const container = document.getElementById('leaves-container');
       container.innerHTML = '';
-      const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
 
       db.leave.forEach(l => {
         const staff = db.users.find(u => u.id === l.user_id);
-        const canAction = l.status === 'Pending' && isManagerOrOwner;
+        const canAction = l.status === 'Pending' && currentUser.role !== 'Staff';
 
         container.innerHTML += `
           <div class="rounded-lg bg-slate-950 p-4 border border-slate-800 flex justify-between items-center animate-fade-in">
@@ -1531,35 +1540,20 @@
               <p class="text-xs text-slate-500 mt-1">${l.start_date} to ${l.end_date} (${l.total_days} days)</p>
               <p class="text-xs text-slate-400 italic mt-1">"${l.reason}"</p>
             </div>
-            <div class="flex flex-col items-end gap-2">
-              <div class="flex items-center gap-2">
-                ${canAction ? `
-                  <button onclick="updateLeaveStatus('${l.id}', 'Approved')" class="rounded bg-emerald-600/20 hover:bg-emerald-600 border border-emerald-500/20 px-2 py-1 text-xs text-emerald-400 hover:text-white transition-all font-semibold">Approve</button>
-                  <button onclick="updateLeaveStatus('${l.id}', 'Rejected')" class="rounded bg-red-600/20 hover:bg-red-600 border border-red-500/20 px-2 py-1 text-xs text-red-400 hover:text-white transition-all font-semibold">Reject</button>
-                ` : `
-                  <span class="px-2 py-0.5 rounded text-xs border ${
-                    l.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                    l.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-800 text-slate-400'
-                  }">${l.status}</span>
-                `}
-              </div>
-              ${isManagerOrOwner ? `
-                <button onclick="handleDeleteLeave('${l.id}')" class="text-[10px] text-red-500 hover:text-red-400 font-bold flex items-center gap-1 transition-colors">
-                  <i data-lucide="trash-2" class="h-3 w-3"></i> Delete
-                </button>
-              ` : ''}
+            <div class="flex items-center gap-2">
+              ${canAction ? `
+                <button onclick="updateLeaveStatus('${l.id}', 'Approved')" class="rounded bg-emerald-600/20 hover:bg-emerald-600 border border-emerald-500/20 px-2 py-1 text-xs text-emerald-400 hover:text-white transition-all">Approve</button>
+                <button onclick="updateLeaveStatus('${l.id}', 'Rejected')" class="rounded bg-red-600/20 hover:bg-red-600 border border-red-500/20 px-2 py-1 text-xs text-red-400 hover:text-white transition-all">Reject</button>
+              ` : `
+                <span class="px-2 py-0.5 rounded text-xs border ${
+                  l.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                  l.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-800 text-slate-400'
+                }">${l.status}</span>
+              `}
             </div>
           </div>
         `;
       });
-      lucide.createIcons();
-    }
-
-    function handleDeleteLeave(id) {
-      if (!confirm('Are you sure you want to delete this leave request?')) return;
-      db.leave = db.leave.filter(l => l.id !== id);
-      saveDb();
-      loadLeave();
     }
 
     function handleRequestLeave(e) {
@@ -1596,21 +1590,16 @@
     }
 
     // VIEW: PAYROLL (FUNCTIONAL MANAGER SYSTEM) [1]
-    function populatePayrollEmployeesDropdown() {
+    function loadPayroll() {
+      // Load user selector list
       const select = document.getElementById('pay-user-select');
-      if (!select) return;
       select.innerHTML = '';
-      db.users.filter(u => u.status !== 'Vacant' && u.status !== 'Terminated').forEach(u => {
+      db.users.filter(u => u.status !== 'Vacant').forEach(u => {
         select.innerHTML += `<option value="${u.id}">${u.name} (Hourly rate: £${parseFloat(u.hourly_rate || 0).toFixed(2)})</option>`;
       });
-    }
-
-    function loadPayroll() {
-      populatePayrollEmployeesDropdown();
 
       const tbody = document.getElementById('payroll-table-body');
       tbody.innerHTML = '';
-      const isManagerOrOwner = currentUser && currentUser.role !== 'Staff';
 
       db.payroll.forEach(p => {
         const staff = db.users.find(u => u.id === p.user_id);
@@ -1619,11 +1608,11 @@
             <td class="p-4 font-semibold text-white">${staff ? staff.name : 'Employee'}</td>
             <td class="p-4 text-slate-400">${p.period_start} to ${p.period_end}</td>
             <td class="p-4 text-slate-300">${p.hours_worked} hrs</td>
-            <td class="p-4 text-slate-300">£${parseFloat(p.pay || 0).toFixed(2)}</td>
-            <td class="p-4 text-red-400">-£${parseFloat(p.deductions || 0).toFixed(2)}</td>
-            <td class="p-4 text-emerald-400 font-bold">£${parseFloat(p.net_pay || 0).toFixed(2)}</td>
+            <td class="p-4 text-slate-300">£${parseFloat(p.pay).toFixed(2)}</td>
+            <td class="p-4 text-red-400">-£${parseFloat(p.deductions).toFixed(2)}</td>
+            <td class="p-4 text-emerald-400 font-bold">£${parseFloat(p.net_pay).toFixed(2)}</td>
             <td class="p-4 text-right">
-              ${isManagerOrOwner ? `
+              ${currentUser.role !== 'Staff' ? `
                 <button onclick="handleDeletePayroll('${p.id}')" class="text-xs text-red-500 hover:text-red-400 flex items-center justify-end gap-1 w-full font-semibold">
                   <i data-lucide="trash-2" class="h-3.5 w-3.5"></i> Delete
                 </button>
@@ -1639,10 +1628,7 @@
       e.preventDefault();
       const userId = document.getElementById('pay-user-select').value;
       const emp = db.users.find(u => u.id === userId);
-      if (!emp) {
-        alert("Please select a valid employee.");
-        return;
-      }
+      if (!emp) return;
 
       const hours = parseFloat(document.getElementById('pay-hours').value) || 0;
       const deductions = parseFloat(document.getElementById('pay-deductions').value) || 0;
@@ -1657,9 +1643,9 @@
         period_start: document.getElementById('pay-start').value,
         period_end: document.getElementById('pay-end').value,
         hours_worked: hours,
-        pay: gross,
-        deductions: deductions,
-        net_pay: net
+        pay: gross.toFixed(2),
+        deductions: deductions.toFixed(2),
+        net_pay: net.toFixed(2)
       });
       saveDb();
       loadPayroll();
@@ -1696,4 +1682,15 @@
       link.setAttribute("download", type + "_report.csv");
       document.body.appendChild(link);
       link.click();
-      docu
+      document.body.removeChild(link);
+    }
+
+    // session validation check on load
+    const activeSession = sessionStorage.getItem('current_user');
+    if (activeSession) {
+      currentUser = JSON.parse(activeSession);
+      initWorkspace();
+    }
+  </script>
+</body>
+</html>
