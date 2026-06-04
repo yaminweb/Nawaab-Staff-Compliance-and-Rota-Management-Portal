@@ -50,7 +50,7 @@
       <!-- Brand Header -->
       <div class="text-center space-y-4">
         <div class="flex flex-col items-center justify-center">
-          <img src="logo.png" id="login-image-logo" alt="Nawaab Logo" class="h-28 w-auto object-contain mx-auto transition-transform duration-200 hover:scale-105" onerror="this.style.display='none'; document.getElementById('login-svg-fallback').classList.remove('hidden');">
+          <img src="logo.png" id="login-image-logo" alt="Nawaab Logo" class="h-28 w-auto object-contain mx-auto transition-transform duration-200 hover:scale-105">
           
           <!-- Fallback Inline SVG Logo -->
           <div id="login-svg-fallback" class="hidden flex flex-col items-center animate-fade-in">
@@ -100,8 +100,8 @@
       <div class="space-y-6">
         <!-- Sidebar Brand Header Area -->
         <div class="flex flex-col items-center space-y-2 border-b border-slate-800 pb-6">
-          <img src="logo.png" id="sidebar-image-logo" alt="Nawaab Logo" class="h-20 w-auto object-contain mx-auto" onerror="this.style.display='none'; document.getElementById('sidebar-svg-fallback').classList.remove('hidden');">
-          <div id="sidebar-svg-fallback" class="hidden flex flex-col items-center text-center">
+          <img src="logo.png" id="sidebar-image-logo" alt="Nawaab Logo" class="h-20 w-auto object-contain mx-auto">
+          <div id="sidebar-svg-fallback" class="hidden flex flex-col items-center text-center animate-fade-in">
             <h1 class="text-lg font-serif font-bold text-white tracking-widest uppercase">NAWAAB</h1>
             <span class="text-[9px] tracking-widest text-brand-500 uppercase font-bold">AUTHENTIC INDIAN</span>
           </div>
@@ -209,7 +209,7 @@
 
         <div class="grid gap-6 lg:grid-cols-3">
           <div class="rounded-xl border border-slate-800 bg-slate-900/20 p-6 lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-semibold text-white font-serif font-serif">Staff Directory Overview</h2>
+            <h2 class="text-lg font-semibold text-white font-serif">Staff Directory Overview</h2>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm text-slate-300">
                 <thead class="border-b border-slate-800 bg-slate-950 text-xs uppercase text-slate-400">
@@ -841,7 +841,7 @@
   <!-- ========================================== -->
   <script>
     // ============================================================
-    // FIREBASE CLOUD BACKUP CONFIGURATION [1]
+    // FIREBASE CLOUD BACKUP CONFIGURATION (PRE-CONNECTED) [1]
     // ============================================================
     const USE_FIREBASE = true; // Automatically syncs across your cloud Realtime DB instance
     const firebaseConfig = {
@@ -859,16 +859,26 @@
     let currentUser = null;
     let firebaseDb = null;
 
-    // DUAL LOGO RENDER ENGINE
-    function showLoginSvgFallback() {
-      document.getElementById('login-image-logo').classList.add('hidden');
-      document.getElementById('login-svg-fallback').classList.remove('hidden');
-    }
-
-    function showSidebarSvgFallback() {
-      document.getElementById('sidebar-image-logo').classList.add('hidden');
-      document.getElementById('sidebar-svg-fallback').classList.remove('hidden');
-    }
+    // Direct image handler error capture triggers before script tags compiled [1]
+    window.addEventListener('DOMContentLoaded', () => {
+      const loginImg = document.getElementById('login-image-logo');
+      if (loginImg) {
+        loginImg.onerror = () => {
+          loginImg.style.display = 'none';
+          const fallback = document.getElementById('login-svg-fallback');
+          if (fallback) fallback.classList.remove('hidden');
+        };
+      }
+      
+      const sidebarImg = document.getElementById('sidebar-image-logo');
+      if (sidebarImg) {
+        sidebarImg.onerror = () => {
+          sidebarImg.style.display = 'none';
+          const fallback = document.getElementById('sidebar-svg-fallback');
+          if (fallback) fallback.classList.remove('hidden');
+        };
+      }
+    });
 
     // Seed default Nawaab datasets with defensive initialization to secure older DB updates
     function initDatabase() {
@@ -981,8 +991,8 @@
         const dot = document.getElementById('firebase-dot');
         const txt = document.getElementById('firebase-txt');
         
-        dot.className = "h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse";
-        txt.textContent = "Cloud Sync Active";
+        if (dot) dot.className = "h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse";
+        if (txt) txt.textContent = "Cloud Sync Active";
 
         let isFirstLoad = true;
         // Realtime data listener
@@ -1004,19 +1014,21 @@
         }, (error) => {
           // If read/write permissions are rejected [1]
           console.error("Firebase Read Failed (Rules Lock):", error);
-          dot.className = "h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse";
-          txt.textContent = "Sync Error: Locked Rules";
-          badge.className = "mb-3 text-[10px] rounded px-2.5 py-2 flex flex-col gap-1.5 bg-red-950/30 border border-red-500/20";
-          badge.innerHTML = `
-            <div class="flex items-center gap-1.5">
-              <span class="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"></span>
-              <span class="text-red-400 font-bold">Cloud Sync Blocked</span>
-            </div>
-            <p class="text-[9px] text-red-300 mt-1 leading-relaxed">
-              Your Firebase database rules are locked. 
-              <br><span class="underline font-bold">To fix this:</span> Go to Firebase Console -> Realtime Database -> Rules. Change <code class="bg-black/30 px-1 py-0.5 rounded">.read</code> and <code class="bg-black/30 px-1 py-0.5 rounded font-mono">.write</code> to <code class="text-emerald-400 font-mono font-bold">true</code>, then click Publish!
-            </p>
-          `;
+          if (dot) dot.className = "h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse";
+          if (txt) txt.textContent = "Sync Error: Locked Rules";
+          if (badge) {
+            badge.className = "mb-3 text-[10px] rounded px-2.5 py-2 flex flex-col gap-1.5 bg-red-950/30 border border-red-500/20";
+            badge.innerHTML = `
+              <div class="flex items-center gap-1.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                <span class="text-red-400 font-bold">Cloud Sync Blocked</span>
+              </div>
+              <p class="text-[9px] text-red-300 mt-1 leading-relaxed">
+                Your Firebase database rules are locked. 
+                <br><span class="underline font-bold">To fix this:</span> Go to Firebase Console -> Realtime Database -> Rules. Change <code class="bg-black/30 px-1 py-0.5 rounded">.read</code> and <code class="bg-black/30 px-1 py-0.5 rounded font-mono">.write</code> to <code class="text-emerald-400 font-mono font-bold">true</code>, then click Publish!
+              </p>
+            `;
+          }
         });
       } catch (err) {
         console.error("Firebase Connection Error: ", err);
@@ -1024,87 +1036,7 @@
     }
 
     // ==========================================
-    // 5. AUTHENTICATION & LOGIN CONTROLLER
-    // ==========================================
-    function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const pass = document.getElementById('login-password').value;
-      const errorDiv = document.getElementById('login-error');
-
-      const user = db.users.find(u => u.email === email && u.password === pass);
-      if (user) {
-        currentUser = user;
-        sessionStorage.setItem('current_user', JSON.stringify(user));
-        errorDiv.classList.add('hidden');
-        initWorkspace();
-      } else {
-        errorDiv.textContent = 'Incorrect credentials';
-        errorDiv.classList.remove('hidden');
-      }
-    }
-
-    function logout() {
-      currentUser = null;
-      sessionStorage.removeItem('current_user');
-      document.getElementById('workspace').classList.add('hidden');
-      document.getElementById('auth-view').classList.remove('hidden');
-    }
-
-    function initWorkspace() {
-      document.getElementById('auth-view').classList.add('hidden');
-      document.getElementById('workspace').classList.remove('hidden');
-
-      document.getElementById('user-display-name').textContent = currentUser.name;
-      document.getElementById('user-display-role').textContent = currentUser.role;
-
-      // Restrict structural tasks from base-level staff roles
-      if (currentUser.role === 'Staff') {
-        document.getElementById('add-employee-btn').classList.add('hidden');
-        document.getElementById('assign-shift-panel').classList.add('hidden');
-        document.getElementById('prof-comp-btn').classList.add('hidden');
-        document.getElementById('prof-upload-form').classList.add('hidden');
-        document.getElementById('add-payroll-btn').classList.add('hidden');
-      } else {
-        document.getElementById('add-employee-btn').classList.remove('hidden');
-        document.getElementById('assign-shift-panel').classList.remove('hidden');
-        document.getElementById('prof-comp-btn').classList.remove('hidden');
-        document.getElementById('prof-upload-form').classList.remove('hidden');
-        document.getElementById('add-payroll-btn').classList.remove('hidden');
-      }
-
-      // Prep active payroll picker on launch
-      populatePayrollEmployeesDropdown();
-
-      navigate('dashboard');
-    }
-
-    // ==========================================
-    // 6. ROUTER NAVIGATION
-    // ==========================================
-    function navigate(viewId) {
-      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-brand-500/10', 'text-brand-500', 'border', 'border-brand-500/20'));
-
-      document.getElementById('view-' + viewId).classList.remove('hidden');
-      lucide.createIcons();
-
-      // UI update hooks
-      if (viewId === 'dashboard') loadDashboard();
-      if (viewId === 'employees') loadEmployees();
-      if (viewId === 'compliance') loadCompliance();
-      if (viewId === 'attendance') loadAttendance();
-      if (viewId === 'scheduling') loadScheduling();
-      if (viewId === 'leave') loadLeave();
-      if (viewId === 'payroll') loadPayroll();
-    }
-
-    function toggleForm(id) {
-      document.getElementById(id).classList.toggle('hidden');
-    }
-
-    // ==========================================
-    // 7. OPERATION FLOW PANELS
+    // DATA BINDINGS & VIEW CONTROLLERS
     // ==========================================
 
     // VIEW: DASHBOARD
@@ -1282,6 +1214,7 @@
     // Dynamic Category Manager loader [1]
     function loadCategoriesDropdown() {
       const select = document.getElementById('prof-doc-type');
+      if (!select) return;
       select.innerHTML = '';
       
       if (!db.categories) {
@@ -1516,10 +1449,12 @@
     // VIEW: SCHEDULING ROTA (WITH ROTATIONAL DELETION ACTION)
     function loadScheduling() {
       const select = document.getElementById('shift-user-select');
-      select.innerHTML = '';
-      db.users.filter(u => u.status !== 'Vacant').forEach(u => {
-        select.innerHTML += `<option value="${u.id}">${u.name} (${u.department})</option>`;
-      });
+      if (select) {
+        select.innerHTML = '';
+        db.users.filter(u => u.status !== 'Vacant').forEach(u => {
+          select.innerHTML += `<option value="${u.id}">${u.name} (${u.department})</option>`;
+        });
+      }
 
       const container = document.getElementById('shifts-container');
       container.innerHTML = '';
@@ -1761,15 +1696,4 @@
       link.setAttribute("download", type + "_report.csv");
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-    }
-
-    // session validation check on load
-    const activeSession = sessionStorage.getItem('current_user');
-    if (activeSession) {
-      currentUser = JSON.parse(activeSession);
-      initWorkspace();
-    }
-  </script>
-</body>
-</html>
+      docu
